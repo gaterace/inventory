@@ -1,0 +1,1048 @@
+// Copyright 2019 Demian Harvill
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+
+syntax = "proto3";
+
+package org.gaterace.mservice.project;
+option csharp_namespace = "MServiceInventory";
+option go_package = "mserviceinventory";
+
+import "DmlExtension.proto";
+
+
+
+service MServiceInventory {
+    // create new facility
+    rpc create_facility (CreateFacilityRequest) returns (CreateFacilityResponse);
+    // update an existing facility
+    rpc update_facility (UpdateFacilityRequest) returns (UpdateFacilityResponse);
+    // delete an existing facility
+    rpc delete_facility (DeleteFacilityRequest) returns (DeleteFacilityResponse);
+    // get a facility by id
+    rpc get_facility (GetFacilityRequest) returns (GetFacilityResponse);
+    // get all facilities by mservice_id
+    rpc get_facilities (GetFacilitiesRequest) returns (GetFacilitiesResponse);
+    // get a facility wrapper by id
+    rpc get_facility_wrapper (GetFacilityWrapperRequest) returns (GetFacilityWrapperResponse);
+    // create new subarea type
+    rpc create_subarea_type (CreateSubareaTypeRequest) returns (CreateSubareaTypeResponse);
+    // update an existing subarea type
+    rpc update_subarea_type (UpdateSubareaTypeRequest) returns (UpdateSubareaTypeResponse);
+    // delete an existing subarea type
+    rpc delete_subarea_type (DeleteSubareaTypeRequest) returns (DeleteSubareaTypeResponse);
+    // get a subarea type by id
+    rpc get_subarea_type (GetSubareaTypeRequest) returns (GetSubareaTypeResponse);
+    // get  subarea types by mservice_id
+    rpc get_subarea_types (GetSubareaTypesRequest) returns (GetSubareaTypesResponse);
+    // create new item type
+    rpc create_item_type (CreateItemTypeRequest) returns (CreateItemTypeResponse);
+    // update an existing item type
+    rpc update_item_type (UpdateItemTypeRequest) returns (UpdateItemTypeResponse);
+    // delete an existing item type
+    rpc delete_item_type (DeleteItemTypeRequest) returns (DeleteItemTypeResponse);
+    // get a item type by id
+    rpc get_item_type (GetItemTypeRequest) returns (GetItemTypeResponse);
+    // get  item types by mservice_id
+    rpc get_item_types (GetItemTypesRequest) returns (GetItemTypesResponse);
+    // create a new subarea
+    rpc create_subarea (CreateSubareaRequest) returns (CreateSubareaResponse);
+    // update an existing subarea
+    rpc update_subarea (UpdateSubareaRequest) returns (UpdateSubareaResponse);
+    // delete an existing subarea
+    rpc delete_subarea (DeleteSubareaRequest) returns (DeleteSubareaResponse);
+    // get a subarea by id
+    rpc get_subarea (GetSubareaRequest) returns (GetSubareaResponse);
+    // get all subareas by facility_id
+    rpc get_subareas (GetSubareasRequest) returns (GetSubareasResponse);
+    // create a new product
+    rpc create_product (CreateProductRequest) returns (CreateProductResponse);
+    // update an existing product
+    rpc update_product (UpdateProductRequest) returns (UpdateProductResponse);
+    // delete an existing product
+    rpc delete_product (DeleteProductRequest) returns (DeleteProductResponse);
+    // get a product by id
+    rpc get_product (GetProductRequest) returns (GetProductResponse);
+    // get all products by mservice_id
+    rpc get_products (GetProductsRequest) returns (GetProductsResponse);
+    // create a new inventory item
+    rpc create_inventory_item (CreateInventoryItemRequest) returns (CreateInventoryItemResponse);
+    // update an existing inventory item
+    rpc update_inventory_item (UpdateInventoryItemRequest) returns (UpdateInventoryItemResponse);
+    // delete an existing inventory item
+    rpc delete_inventory_item (DeleteInventoryItemRequest) returns (DeleteInventoryItemResponse);
+    // get an inventory item by id
+    rpc get_inventory_item (GetInventoryItemRequest) returns (GetInventoryItemResponse);
+    // get all inventory items for a product id
+    rpc get_inventory_items_by_product (GetInventoryItemsByProductRequest) returns (GetInventoryItemsByProductResponse);
+    // get all inventory items in a subarea
+    rpc get_inventory_items_by_subarea (GetInventoryItemsBySubareaRequest) returns (GetInventoryItemsBySubareaResponse);
+    // get all inventory items in a facility
+    rpc get_inventory_items_by_facility (GetInventoryItemsByFacilityRequest) returns (GetInventoryItemsByFacilityResponse);
+  
+}
+
+
+
+// inventory facility entity
+message Facility {
+    // facility identifier
+    int64 facility_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // facility name
+    string facility_name = 8;
+
+}
+
+// inventory facility wrapper
+message FacilityWrapper {
+    // facility identifier
+    int64 facility_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // facility name
+    string facility_name = 8;
+    // list of child subarea wrappers
+    repeated SubareaWrapper child_subareas = 9;
+
+}
+
+// inventory subarea type mapping
+message SubareaType {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea type identifier
+    int32 subarea_type_id = 2;
+    // creation date
+    dml.DateTime created = 3;
+    // modification date
+    dml.DateTime modified = 4;
+    // deletion date
+    dml.DateTime deleted = 5;
+    // has record been deleted?
+    bool is_deleted = 6;
+    // version of this record
+    int32 version = 7;
+    // subarea type name
+    string subarea_type_name = 8;
+
+}
+
+// inventory item type mapping
+message ItemType {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item type identifier
+    int32 item_type_id = 2;
+    // creation date
+    dml.DateTime created = 3;
+    // modification date
+    dml.DateTime modified = 4;
+    // deletion date
+    dml.DateTime deleted = 5;
+    // has record been deleted?
+    bool is_deleted = 6;
+    // version of this record
+    int32 version = 7;
+    // item type name
+    string item_type_name = 8;
+
+}
+
+// inventory subarea within facility
+message Subarea {
+    // subarea identifier
+    int64 subarea_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // facility identifier
+    int64 facility_id = 8;
+    // facility name
+    string facility_name = 9;
+    // parent subarea identifier, zero if no parent
+    int64 parent_subarea_id = 10;
+    // position of subarea within parent
+    int32 position = 11;
+    // subarea type identifier
+    int32 subarea_type_id = 12;
+    // subarea type name
+    string subarea_type_name = 13;
+    // subarea name
+    string subarea_name = 14;
+
+}
+
+// wrapper for inventory subarea within facility
+message SubareaWrapper {
+    // subarea identifier
+    int64 subarea_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // facility identifier
+    int64 facility_id = 8;
+    // facility name
+    string facility_name = 9;
+    // parent subarea identifier, zero if no parent
+    int64 parent_subarea_id = 10;
+    // position of subarea within parent
+    int32 position = 11;
+    // subarea type identifier
+    int32 subarea_type_id = 12;
+    // subarea type name
+    string subarea_type_name = 13;
+    // subarea name
+    string subarea_name = 14;
+    // list of child subarea wrappers
+    repeated SubareaWrapper child_subareas = 15;
+
+}
+
+// inventory product
+message Product {
+    // inventory product identifier
+    int64 product_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // inventory product sku
+    string sku = 8;
+    // product name
+    string product_name = 9;
+    // entity comment
+    string comment = 10;
+
+}
+
+// inventory item
+message InventoryItem {
+    // inventory item identifier
+    int64 inventory_item_id = 1;
+    // creation date
+    dml.DateTime created = 2;
+    // modification date
+    dml.DateTime modified = 3;
+    // deletion date
+    dml.DateTime deleted = 4;
+    // has record been deleted?
+    bool is_deleted = 5;
+    // version of this record
+    int32 version = 6;
+    // mservice account identifier
+    int64 mservice_id = 7;
+    // subarea identifier
+    int64 subarea_id = 8;
+    // inventory item type identifier
+    int32 item_type_id = 9;
+    // item type name
+    string item_type_name = 10;
+    // item quantity
+    int32 quantity = 11;
+    // item serial number
+    string serial_number = 12;
+    // inventory product identifier
+    int64 product_id = 13;
+    // product name
+    string product_name = 14;
+
+}
+
+// request parameters for method create_facility
+message CreateFacilityRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility name
+    string facility_name = 2;
+
+}
+
+// response parameters for method create_facility
+message CreateFacilityResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+    // facility identifier
+    int64 facility_id = 4;
+
+}
+
+// request parameters for method update_facility
+message UpdateFacilityRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+    // version of this record
+    int32 version = 3;
+    // facility name
+    string facility_name = 4;
+
+}
+
+// response parameters for method update_facility
+message UpdateFacilityResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_facility
+message DeleteFacilityRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_facility
+message DeleteFacilityResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_facility
+message GetFacilityRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+
+}
+
+// response parameters for method get_facility
+message GetFacilityResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // inventory facility object
+    Facility facility = 3;
+
+}
+
+// request parameters for method get_facilities
+message GetFacilitiesRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+
+}
+
+// response parameters for method get_facilities
+message GetFacilitiesResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory facility objects
+    repeated Facility facilities = 3;
+
+}
+
+// request parameters for method get_facility_wrapper
+message GetFacilityWrapperRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+
+}
+
+// response parameters for method get_facility_wrapper
+message GetFacilityWrapperResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // facility wrapper object
+    FacilityWrapper facility_wrapper = 3;
+
+}
+
+// request parameters for method create_subarea_type
+message CreateSubareaTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea type identifier
+    int32 subarea_type_id = 2;
+    // subarea type name
+    string subarea_type_name = 3;
+
+}
+
+// response parameters for method create_subarea_type
+message CreateSubareaTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method update_subarea_type
+message UpdateSubareaTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea type identifier
+    int32 subarea_type_id = 2;
+    // version of this record
+    int32 version = 3;
+    // subarea type name
+    string subarea_type_name = 4;
+
+}
+
+// response parameters for method update_subarea_type
+message UpdateSubareaTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_subarea_type
+message DeleteSubareaTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea type identifier
+    int32 subarea_type_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_subarea_type
+message DeleteSubareaTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_subarea_type
+message GetSubareaTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea type identifier
+    int32 subarea_type_id = 2;
+
+}
+
+// response parameters for method get_subarea_type
+message GetSubareaTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // subarea type object
+    SubareaType subarea_type = 3;
+
+}
+
+// request parameters for method get_subarea_types
+message GetSubareaTypesRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+
+}
+
+// response parameters for method get_subarea_types
+message GetSubareaTypesResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of subarea type objects
+    repeated SubareaType subarea_types = 3;
+
+}
+
+// request parameters for method create_item_type
+message CreateItemTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item type identifier
+    int32 item_type_id = 2;
+    // item type name
+    string item_type_name = 3;
+
+}
+
+// response parameters for method create_item_type
+message CreateItemTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method update_item_type
+message UpdateItemTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item type identifier
+    int32 item_type_id = 2;
+    // version of this record
+    int32 version = 3;
+    // item type name
+    string item_type_name = 4;
+
+}
+
+// response parameters for method update_item_type
+message UpdateItemTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_item_type
+message DeleteItemTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item type identifier
+    int32 item_type_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_item_type
+message DeleteItemTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_item_type
+message GetItemTypeRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item type identifier
+    int32 item_type_id = 2;
+
+}
+
+// response parameters for method get_item_type
+message GetItemTypeResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // inventory item type object
+    ItemType item_type = 3;
+
+}
+
+// request parameters for method get_item_types
+message GetItemTypesRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+
+}
+
+// response parameters for method get_item_types
+message GetItemTypesResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory item type objects
+    repeated ItemType item_types = 3;
+
+}
+
+// request parameters for method create_subarea
+message CreateSubareaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+    // parent subarea identifier, zero if no parent
+    int64 parent_subarea_id = 3;
+    // position of subarea within parent
+    int32 position = 4;
+    // subarea type identifier
+    int32 subarea_type_id = 5;
+    // subarea name
+    string subarea_name = 6;
+
+}
+
+// response parameters for method create_subarea
+message CreateSubareaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+    // subarea identifier
+    int64 subarea_id = 4;
+
+}
+
+// request parameters for method update_subarea
+message UpdateSubareaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea identifier
+    int64 subarea_id = 2;
+    // version of this record
+    int32 version = 3;
+    // parent subarea identifier, zero if no parent
+    int64 parent_subarea_id = 4;
+    // position of subarea within parent
+    int32 position = 5;
+    // subarea type identifier
+    int32 subarea_type_id = 6;
+    // subarea name
+    string subarea_name = 7;
+
+}
+
+// response parameters for method update_subarea
+message UpdateSubareaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_subarea
+message DeleteSubareaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea identifier
+    int64 subarea_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_subarea
+message DeleteSubareaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_subarea
+message GetSubareaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea identifier
+    int64 subarea_id = 2;
+
+}
+
+// response parameters for method get_subarea
+message GetSubareaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // subarea object
+    Subarea subarea = 3;
+
+}
+
+// request parameters for method get_subareas
+message GetSubareasRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+
+}
+
+// response parameters for method get_subareas
+message GetSubareasResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of subarea objects
+    repeated Subarea subareas = 3;
+
+}
+
+// request parameters for method create_product
+message CreateProductRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory product sku
+    string sku = 2;
+    // product name
+    string product_name = 3;
+    // entity comment
+    string comment = 4;
+
+}
+
+// response parameters for method create_product
+message CreateProductResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+    // inventory product identifier
+    int64 product_id = 4;
+
+}
+
+// request parameters for method update_product
+message UpdateProductRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory product identifier
+    int64 product_id = 2;
+    // version of this record
+    int32 version = 3;
+    // inventory product sku
+    string sku = 4;
+    // product name
+    string product_name = 5;
+    // entity comment
+    string comment = 6;
+
+}
+
+// response parameters for method update_product
+message UpdateProductResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_product
+message DeleteProductRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory product identifier
+    int64 product_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_product
+message DeleteProductResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_product
+message GetProductRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory product identifier
+    int64 product_id = 2;
+
+}
+
+// response parameters for method get_product
+message GetProductResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // inventory product object
+    Product product = 3;
+
+}
+
+// request parameters for method get_products
+message GetProductsRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+
+}
+
+// response parameters for method get_products
+message GetProductsResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory product objects
+    repeated Product products = 3;
+
+}
+
+// request parameters for method create_inventory_item
+message CreateInventoryItemRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea identifier
+    int64 subarea_id = 2;
+    // inventory item type identifier
+    int32 item_type_id = 3;
+    // item quantity
+    int32 quantity = 4;
+    // item serial number
+    string serial_number = 5;
+    // inventory product identifier
+    int64 product_id = 6;
+
+}
+
+// response parameters for method create_inventory_item
+message CreateInventoryItemResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+    // inventory item identifier
+    int64 inventory_item_id = 4;
+
+}
+
+// request parameters for method update_inventory_item
+message UpdateInventoryItemRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item identifier
+    int64 inventory_item_id = 2;
+    // version of this record
+    int32 version = 3;
+    // subarea identifier
+    int64 subarea_id = 4;
+    // inventory item type identifier
+    int32 item_type_id = 5;
+    // item quantity
+    int32 quantity = 6;
+    // item serial number
+    string serial_number = 7;
+    // inventory product identifier
+    int64 product_id = 8;
+
+}
+
+// response parameters for method update_inventory_item
+message UpdateInventoryItemResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_inventory_item
+message DeleteInventoryItemRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item identifier
+    int64 inventory_item_id = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_inventory_item
+message DeleteInventoryItemResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_inventory_item
+message GetInventoryItemRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory item identifier
+    int64 inventory_item_id = 2;
+
+}
+
+// response parameters for method get_inventory_item
+message GetInventoryItemResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // inventory item object
+    InventoryItem inventory_item = 3;
+
+}
+
+// request parameters for method get_inventory_items_by_product
+message GetInventoryItemsByProductRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // inventory product identifier
+    int64 product_id = 2;
+
+}
+
+// response parameters for method get_inventory_items_by_product
+message GetInventoryItemsByProductResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory item objects
+    repeated InventoryItem inventory_items = 3;
+
+}
+
+// request parameters for method get_inventory_items_by_subarea
+message GetInventoryItemsBySubareaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // subarea identifier
+    int64 subarea_id = 2;
+
+}
+
+// response parameters for method get_inventory_items_by_subarea
+message GetInventoryItemsBySubareaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory item objects
+    repeated InventoryItem inventory_items = 3;
+
+}
+
+// request parameters for method get_inventory_items_by_facility
+message GetInventoryItemsByFacilityRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // facility identifier
+    int64 facility_id = 2;
+
+}
+
+// response parameters for method get_inventory_items_by_facility
+message GetInventoryItemsByFacilityResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of inventory item objects
+    repeated InventoryItem inventory_items = 3;
+
+}
+
+
+

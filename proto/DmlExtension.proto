@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package dml;
+
+
+message DateTime {
+  int64 milliseconds = 1;
+}
+
+message Decimal {
+  string plaintext = 1;
+}
+
+message Guid {
+  bytes guid = 1;
+}
