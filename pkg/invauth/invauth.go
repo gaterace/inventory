@@ -714,3 +714,8 @@ func (s *invAuth) GetInventoryItemsByFacility(ctx context.Context, req *pb.GetIn
 
 	return resp, err
 }
+
+// get current server version and uptime - health check
+func (s *invAuth) GetServerVersion(ctx context.Context, req *pb.GetServerVersionRequest) (*pb.GetServerVersionResponse, error) {
+	return s.invService.GetServerVersion(ctx, req)
+}

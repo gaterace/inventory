@@ -20,6 +20,7 @@ import (
 	"errors"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/gaterace/dml-go/pkg/dml"
 
@@ -32,13 +33,15 @@ import (
 var NotImplemented = errors.New("not implemented")
 
 type invService struct {
-	logger *log.Logger
-	db     *sql.DB
+	logger    *log.Logger
+	db        *sql.DB
+	startSecs int64
 }
 
 // Get a new invSerice instance.
 func NewInvService() *invService {
 	svc := invService{}
+	svc.startSecs = time.Now().Unix()
 	return &svc
 }
 

@@ -122,6 +122,8 @@ func main() {
 		fmt.Printf("    %s get_items_by_product --product <product_id>\n", prog)
 		fmt.Printf("    %s get_items_by_subarea --subarea <subarea_id>\n", prog)
 		fmt.Printf("    %s get_items_by_facility --facility <facility_id>\n", prog)
+
+		fmt.Printf("    %s get_server_version\n", prog)
 	}
 
 	cmd := flag.Arg(0)
@@ -436,6 +438,10 @@ func main() {
 			validParams = false
 		}
 
+	case "get_server_version":
+		// no paramaters
+		validParams = true
+
 	default:
 		fmt.Printf("unknown command: %s\n", cmd)
 		validParams = false
@@ -732,7 +738,14 @@ func main() {
 		req.FacilityId = *facility
 		resp, err := client.GetInventoryItemsByFacility(mctx, &req)
 		printResponse(resp, err)
+
+	case "get_server_version":
+		req := pb.GetServerVersionRequest{}
+		resp, err := client.GetServerVersion(mctx, &req)
+		printResponse(resp, err)
+
 	}
+
 }
 
 // Helper to print method response as JSON.

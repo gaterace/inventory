@@ -17,6 +17,7 @@ import (
 	"context"
 	"database/sql"
 	"strings"
+	"time"
 
 	"github.com/gaterace/dml-go/pkg/dml"
 
@@ -1028,6 +1029,18 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 
 		resp.InventoryItems = append(resp.InventoryItems, &item)
 	}
+
+	return resp, nil
+}
+
+// get current server version and uptime - health check
+func (s *invService) GetServerVersion(ctx context.Context, req *pb.GetServerVersionRequest) (*pb.GetServerVersionResponse, error) {
+	s.logger.Printf("GetServerVersion called\n")
+	resp := &pb.GetServerVersionResponse{}
+
+	currentSecs := time.Now().Unix()
+	resp.ServerVersion = "v0.9.2"
+	resp.ServerUptime = currentSecs - s.startSecs
 
 	return resp, nil
 }

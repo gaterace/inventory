@@ -21,4 +21,5 @@ inventory.sublime-*
 
 cmd/invclient/invclient
 cmd/invserver/invserver
+cmd/invserver/invserver_arm
 
