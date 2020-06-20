@@ -18,7 +18,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 	"strings"
 	"time"
 
@@ -33,12 +34,12 @@ import (
 var NotImplemented = errors.New("not implemented")
 
 type invService struct {
-	logger    *log.Logger
+	logger    log.Logger
 	db        *sql.DB
 	startSecs int64
 }
 
-// Get a new invSerice instance.
+// Get a new invService instance.
 func NewInvService() *invService {
 	svc := invService{}
 	svc.startSecs = time.Now().Unix()
@@ -46,7 +47,7 @@ func NewInvService() *invService {
 }
 
 // Set the logger for the invService instance.
-func (s *invService) SetLogger(logger *log.Logger) {
+func (s *invService) SetLogger(logger log.Logger) {
 	s.logger = logger
 }
 
@@ -66,7 +67,6 @@ func (s *invService) NewApiServer(gServer *grpc.Server) error {
 
 // create new facility
 func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityRequest) (*pb.CreateFacilityResponse, error) {
-	s.logger.Printf("CreateFacility called, aid: %d, name: %s\n", req.GetMserviceId(), req.GetFacilityName())
 	resp := &pb.CreateFacilityResponse{}
 
 	name := strings.TrimSpace(req.GetFacilityName())
@@ -81,7 +81,7 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -94,9 +94,9 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 	if err == nil {
 		facilityId, err := res.LastInsertId()
 		if err != nil {
-			s.logger.Printf("LastInsertId err: %v\n", err)
+			level.Error(s.logger).Log("what", "LastInsertId", "error", err)
 		} else {
-			s.logger.Printf("facilityId: %d", facilityId)
+			level.Debug(s.logger).Log("facilityId", facilityId)
 		}
 
 		resp.FacilityId = facilityId
@@ -104,7 +104,7 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -113,7 +113,6 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 
 // update an existing facility
 func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityRequest) (*pb.UpdateFacilityResponse, error) {
-	s.logger.Printf("UpdateFacility called, aid: %d, facility_id: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.UpdateFacilityResponse{}
 	name := strings.TrimSpace(req.GetFacilityName())
 	if name == "" {
@@ -127,7 +126,7 @@ func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -147,7 +146,7 @@ func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -156,7 +155,6 @@ func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityR
 
 // delete an existing facility
 func (s *invService) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityRequest) (*pb.DeleteFacilityResponse, error) {
-	s.logger.Printf("DeleteFacility called, aid: %d, facility_id: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.DeleteFacilityResponse{}
 
 	sqlstring := `UPDATE tb_Facility SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -164,7 +162,7 @@ func (s *invService) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -184,7 +182,7 @@ func (s *invService) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -193,7 +191,6 @@ func (s *invService) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityR
 
 // get a facility by id
 func (s *invService) GetFacility(ctx context.Context, req *pb.GetFacilityRequest) (*pb.GetFacilityResponse, error) {
-	s.logger.Printf("GetFacility called, aid: %d, facility_id: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.GetFacilityResponse{}
 
 	gResp, facility := s.GetFacilityHelper(req.GetMserviceId(), req.GetFacilityId())
@@ -208,7 +205,6 @@ func (s *invService) GetFacility(ctx context.Context, req *pb.GetFacilityRequest
 
 // get all facilities by mservice_id
 func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesRequest) (*pb.GetFacilitiesResponse, error) {
-	s.logger.Printf("GetFacilities called, aid: %d\n", req.GetMserviceId())
 	resp := &pb.GetFacilitiesResponse{}
 
 	sqlstring := `SELECT inbFacilityId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvFacilityName
@@ -216,7 +212,7 @@ func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -227,7 +223,7 @@ func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReq
 	rows, err := stmt.Query(req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -243,7 +239,7 @@ func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReq
 			&facility.Version, &facility.MserviceId, &facility.FacilityName)
 
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -260,7 +256,6 @@ func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReq
 
 // get a facility wrapper by id
 func (s *invService) GetFacilityWrapper(ctx context.Context, req *pb.GetFacilityWrapperRequest) (*pb.GetFacilityWrapperResponse, error) {
-	s.logger.Printf("GetFacilityWrapper called, aid: %d, facility_id: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.GetFacilityWrapperResponse{}
 
 	gResp, facility := s.GetFacilityHelper(req.GetMserviceId(), req.GetFacilityId())
@@ -307,7 +302,6 @@ func (s *invService) GetFacilityWrapper(ctx context.Context, req *pb.GetFacility
 
 // create new subarea type
 func (s *invService) CreateSubareaType(ctx context.Context, req *pb.CreateSubareaTypeRequest) (*pb.CreateSubareaTypeResponse, error) {
-	s.logger.Printf("CreateSubareaType called, aid: %d, id: %d, name: %s\n", req.GetMserviceId(), req.GetSubareaTypeId(), req.GetSubareaTypeName())
 	resp := &pb.CreateSubareaTypeResponse{}
 
 	name := strings.TrimSpace(req.GetSubareaTypeName())
@@ -322,7 +316,7 @@ func (s *invService) CreateSubareaType(ctx context.Context, req *pb.CreateSubare
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -337,7 +331,7 @@ func (s *invService) CreateSubareaType(ctx context.Context, req *pb.CreateSubare
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -346,7 +340,6 @@ func (s *invService) CreateSubareaType(ctx context.Context, req *pb.CreateSubare
 
 // update an existing subarea type
 func (s *invService) UpdateSubareaType(ctx context.Context, req *pb.UpdateSubareaTypeRequest) (*pb.UpdateSubareaTypeResponse, error) {
-	s.logger.Printf("UpdateSubareaType called, aid: %d, id: %d, name: %s\n", req.GetMserviceId(), req.GetSubareaTypeId(), req.GetSubareaTypeName())
 	resp := &pb.UpdateSubareaTypeResponse{}
 	name := strings.TrimSpace(req.GetSubareaTypeName())
 	if name == "" {
@@ -360,7 +353,7 @@ func (s *invService) UpdateSubareaType(ctx context.Context, req *pb.UpdateSubare
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -380,7 +373,7 @@ func (s *invService) UpdateSubareaType(ctx context.Context, req *pb.UpdateSubare
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -389,7 +382,6 @@ func (s *invService) UpdateSubareaType(ctx context.Context, req *pb.UpdateSubare
 
 // delete an existing subarea type
 func (s *invService) DeleteSubareaType(ctx context.Context, req *pb.DeleteSubareaTypeRequest) (*pb.DeleteSubareaTypeResponse, error) {
-	s.logger.Printf("DeleteSubareaType called, aid: %d, id: %d\n", req.GetMserviceId(), req.GetSubareaTypeId())
 	resp := &pb.DeleteSubareaTypeResponse{}
 
 	sqlstring := `UPDATE tb_SubareaType SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -397,7 +389,7 @@ func (s *invService) DeleteSubareaType(ctx context.Context, req *pb.DeleteSubare
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -417,7 +409,7 @@ func (s *invService) DeleteSubareaType(ctx context.Context, req *pb.DeleteSubare
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -426,7 +418,6 @@ func (s *invService) DeleteSubareaType(ctx context.Context, req *pb.DeleteSubare
 
 // get a subarea type by id
 func (s *invService) GetSubareaType(ctx context.Context, req *pb.GetSubareaTypeRequest) (*pb.GetSubareaTypeResponse, error) {
-	s.logger.Printf("GetSubareaType called, aid: %d, subarea_type_id: %d\n", req.GetMserviceId(), req.GetSubareaTypeId())
 	resp := &pb.GetSubareaTypeResponse{}
 
 	sqlstring := `SELECT inbMserviceId, intSubareaTypeId, dtmCreated, dtmModified, intVersion, chvSubareaTypeName
@@ -434,7 +425,7 @@ func (s *invService) GetSubareaType(ctx context.Context, req *pb.GetSubareaTypeR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -458,7 +449,7 @@ func (s *invService) GetSubareaType(ctx context.Context, req *pb.GetSubareaTypeR
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 
@@ -469,7 +460,6 @@ func (s *invService) GetSubareaType(ctx context.Context, req *pb.GetSubareaTypeR
 
 // get  subarea types by mservice_id
 func (s *invService) GetSubareaTypes(ctx context.Context, req *pb.GetSubareaTypesRequest) (*pb.GetSubareaTypesResponse, error) {
-	s.logger.Printf("GetSubareaTypes called, aid: %d\n", req.GetMserviceId())
 	resp := &pb.GetSubareaTypesResponse{}
 
 	sqlstring := `SELECT inbMserviceId, intSubareaTypeId, dtmCreated, dtmModified, intVersion, chvSubareaTypeName
@@ -477,7 +467,7 @@ func (s *invService) GetSubareaTypes(ctx context.Context, req *pb.GetSubareaType
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -488,7 +478,7 @@ func (s *invService) GetSubareaTypes(ctx context.Context, req *pb.GetSubareaType
 	rows, err := stmt.Query(req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -504,7 +494,7 @@ func (s *invService) GetSubareaTypes(ctx context.Context, req *pb.GetSubareaType
 			&modified, &subtype.Version, &subtype.SubareaTypeName)
 
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil

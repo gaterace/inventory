@@ -16,6 +16,7 @@ package invservice
 import (
 	"context"
 	"database/sql"
+	"github.com/go-kit/kit/log/level"
 	"strings"
 	"time"
 
@@ -28,7 +29,6 @@ import (
 
 // create new item type
 func (s *invService) CreateItemType(ctx context.Context, req *pb.CreateItemTypeRequest) (*pb.CreateItemTypeResponse, error) {
-	s.logger.Printf("CreateItemType called, aid: %d, id: %d, name: %s\n", req.GetMserviceId(), req.GetItemTypeId(), req.GetItemTypeName())
 	resp := &pb.CreateItemTypeResponse{}
 
 	name := strings.TrimSpace(req.GetItemTypeName())
@@ -43,7 +43,7 @@ func (s *invService) CreateItemType(ctx context.Context, req *pb.CreateItemTypeR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -58,7 +58,7 @@ func (s *invService) CreateItemType(ctx context.Context, req *pb.CreateItemTypeR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -67,7 +67,6 @@ func (s *invService) CreateItemType(ctx context.Context, req *pb.CreateItemTypeR
 
 // update an existing item type
 func (s *invService) UpdateItemType(ctx context.Context, req *pb.UpdateItemTypeRequest) (*pb.UpdateItemTypeResponse, error) {
-	s.logger.Printf("UpdateItemType called, aid: %d, id: %d, name: %s\n", req.GetMserviceId(), req.GetItemTypeId(), req.GetItemTypeName())
 	resp := &pb.UpdateItemTypeResponse{}
 
 	name := strings.TrimSpace(req.GetItemTypeName())
@@ -82,7 +81,7 @@ func (s *invService) UpdateItemType(ctx context.Context, req *pb.UpdateItemTypeR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -102,7 +101,7 @@ func (s *invService) UpdateItemType(ctx context.Context, req *pb.UpdateItemTypeR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -111,7 +110,6 @@ func (s *invService) UpdateItemType(ctx context.Context, req *pb.UpdateItemTypeR
 
 // delete an existing item type
 func (s *invService) DeleteItemType(ctx context.Context, req *pb.DeleteItemTypeRequest) (*pb.DeleteItemTypeResponse, error) {
-	s.logger.Printf("DeleteItemType called, aid: %d, id: %d\n", req.GetMserviceId(), req.GetItemTypeId())
 	resp := &pb.DeleteItemTypeResponse{}
 
 	sqlstring := `UPDATE tb_ItemType SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -119,7 +117,7 @@ func (s *invService) DeleteItemType(ctx context.Context, req *pb.DeleteItemTypeR
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -139,7 +137,7 @@ func (s *invService) DeleteItemType(ctx context.Context, req *pb.DeleteItemTypeR
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -148,7 +146,6 @@ func (s *invService) DeleteItemType(ctx context.Context, req *pb.DeleteItemTypeR
 
 // get a item type by id
 func (s *invService) GetItemType(ctx context.Context, req *pb.GetItemTypeRequest) (*pb.GetItemTypeResponse, error) {
-	s.logger.Printf("GetItemType called, aid: %d, item_type_id: %d\n", req.GetMserviceId(), req.GetItemTypeId())
 	resp := &pb.GetItemTypeResponse{}
 
 	sqlstring := `SELECT inbMserviceId, intItemTypeId, dtmCreated, dtmModified, intVersion, chvItemTypeName
@@ -156,7 +153,7 @@ func (s *invService) GetItemType(ctx context.Context, req *pb.GetItemTypeRequest
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -180,7 +177,7 @@ func (s *invService) GetItemType(ctx context.Context, req *pb.GetItemTypeRequest
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 
@@ -191,7 +188,6 @@ func (s *invService) GetItemType(ctx context.Context, req *pb.GetItemTypeRequest
 
 // get  item types by mservice_id
 func (s *invService) GetItemTypes(ctx context.Context, req *pb.GetItemTypesRequest) (*pb.GetItemTypesResponse, error) {
-	s.logger.Printf("GetItemTypes called, aid: %d\n", req.GetMserviceId())
 	resp := &pb.GetItemTypesResponse{}
 
 	sqlstring := `SELECT inbMserviceId, intItemTypeId, dtmCreated, dtmModified, intVersion, chvItemTypeName
@@ -199,7 +195,7 @@ func (s *invService) GetItemTypes(ctx context.Context, req *pb.GetItemTypesReque
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -210,7 +206,7 @@ func (s *invService) GetItemTypes(ctx context.Context, req *pb.GetItemTypesReque
 	rows, err := stmt.Query(req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -226,7 +222,7 @@ func (s *invService) GetItemTypes(ctx context.Context, req *pb.GetItemTypesReque
 			&modified, &itemtype.Version, &itemtype.ItemTypeName)
 
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -243,7 +239,6 @@ func (s *invService) GetItemTypes(ctx context.Context, req *pb.GetItemTypesReque
 
 // create a new subarea
 func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaRequest) (*pb.CreateSubareaResponse, error) {
-	s.logger.Printf("CreateSubarea called, aid: %d, name: %s\n", req.GetMserviceId(), req.GetSubareaName())
 	resp := &pb.CreateSubareaResponse{}
 
 	name := strings.TrimSpace(req.GetSubareaName())
@@ -259,7 +254,7 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -273,9 +268,9 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 	if err == nil {
 		subareaId, err := res.LastInsertId()
 		if err != nil {
-			s.logger.Printf("LastInsertId err: %v\n", err)
+			level.Error(s.logger).Log("what", "LastInsertId", "error", err)
 		} else {
-			s.logger.Printf("subareaId: %d", subareaId)
+			level.Debug(s.logger).Log("subareaId", subareaId)
 		}
 
 		resp.SubareaId = subareaId
@@ -283,7 +278,7 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -292,7 +287,6 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 
 // update an existing subarea
 func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaRequest) (*pb.UpdateSubareaResponse, error) {
-	s.logger.Printf("UpdateSubarea called, aid: %d, name: %s\n", req.GetMserviceId(), req.GetSubareaName())
 	resp := &pb.UpdateSubareaResponse{}
 
 	name := strings.TrimSpace(req.GetSubareaName())
@@ -308,7 +302,7 @@ func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -330,7 +324,7 @@ func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -339,7 +333,6 @@ func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReq
 
 // delete an existing subarea
 func (s *invService) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaRequest) (*pb.DeleteSubareaResponse, error) {
-	s.logger.Printf("DeleteSubarea called, aid: %d, subareaId: %d\n", req.GetMserviceId(), req.GetSubareaId())
 	resp := &pb.DeleteSubareaResponse{}
 
 	sqlstring := `UPDATE tb_Subarea SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -347,7 +340,7 @@ func (s *invService) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -367,7 +360,7 @@ func (s *invService) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -376,7 +369,6 @@ func (s *invService) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaReq
 
 // get a subarea by id
 func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) (*pb.GetSubareaResponse, error) {
-	s.logger.Printf("GetSubarea called, aid: %d, subareaId: %d\n", req.GetMserviceId(), req.GetSubareaId())
 	resp := &pb.GetSubareaResponse{}
 
 	sqlstring := `SELECT s.inbSubareaId, s.dtmCreated, s.dtmModified, s.intVersion, s.inbMserviceId, s.inbFacilityId, 
@@ -388,7 +380,7 @@ func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) 
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -421,7 +413,7 @@ func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) 
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 	}
@@ -431,7 +423,6 @@ func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) 
 
 // get all subareas by facility_id
 func (s *invService) GetSubareas(ctx context.Context, req *pb.GetSubareasRequest) (*pb.GetSubareasResponse, error) {
-	s.logger.Printf("GetSubareas called, aid: %d, facilityId: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.GetSubareasResponse{}
 
 	gResp, subareas := s.GetSubareasHelper(req.GetMserviceId(), req.GetFacilityId())
@@ -445,7 +436,6 @@ func (s *invService) GetSubareas(ctx context.Context, req *pb.GetSubareasRequest
 
 // create a new product
 func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductRequest) (*pb.CreateProductResponse, error) {
-	s.logger.Printf("CreateProduct called, aid: %d, name: %s\n", req.GetMserviceId(), req.GetProductName())
 	resp := &pb.CreateProductResponse{}
 
 	name := strings.TrimSpace(req.GetProductName())
@@ -460,7 +450,7 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -472,9 +462,9 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 	if err == nil {
 		productId, err := res.LastInsertId()
 		if err != nil {
-			s.logger.Printf("LastInsertId err: %v\n", err)
+			level.Error(s.logger).Log("what", "LastInsertId", "error", err)
 		} else {
-			s.logger.Printf("productId: %d", productId)
+			level.Debug(s.logger).Log("productId", productId)
 		}
 
 		resp.ProductId = productId
@@ -482,7 +472,7 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -491,7 +481,6 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 
 // update an existing product
 func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductRequest) (*pb.UpdateProductResponse, error) {
-	s.logger.Printf("UpdateProduct called, aid: %d, productId: %d\n", req.GetMserviceId(), req.GetProductId())
 	resp := &pb.UpdateProductResponse{}
 
 	name := strings.TrimSpace(req.GetProductName())
@@ -506,7 +495,7 @@ func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -526,7 +515,7 @@ func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -535,7 +524,6 @@ func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq
 
 // delete an existing product
 func (s *invService) DeleteProduct(ctx context.Context, req *pb.DeleteProductRequest) (*pb.DeleteProductResponse, error) {
-	s.logger.Printf("DeleteProduct called, aid: %d, productId: %d\n", req.GetMserviceId(), req.GetProductId())
 	resp := &pb.DeleteProductResponse{}
 
 	sqlstring := `UPDATE tb_Product SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -543,7 +531,7 @@ func (s *invService) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -564,7 +552,7 @@ func (s *invService) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -573,7 +561,6 @@ func (s *invService) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq
 
 // get a product by id
 func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.GetProductResponse, error) {
-	s.logger.Printf("GetProduct called, aid: %d, productId: %d\n", req.GetMserviceId(), req.GetProductId())
 	resp := &pb.GetProductResponse{}
 
 	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, chvComment
@@ -581,7 +568,7 @@ func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) 
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -606,7 +593,7 @@ func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) 
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 	}
@@ -616,7 +603,6 @@ func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) 
 
 // get all products by mservice_id
 func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
-	s.logger.Printf("GetProducts called, aid: %d\n", req.GetMserviceId())
 	resp := &pb.GetProductsResponse{}
 
 	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, chvComment
@@ -624,7 +610,7 @@ func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -635,7 +621,7 @@ func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest
 	rows, err := stmt.Query(req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -651,7 +637,7 @@ func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest
 			&product.MserviceId, &product.Sku, &product.ProductName, &product.Comment)
 
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -667,7 +653,6 @@ func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest
 
 // create a new inventory item
 func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInventoryItemRequest) (*pb.CreateInventoryItemResponse, error) {
-	s.logger.Printf("CreateInventoryItem called, aid: %d\n", req.GetMserviceId())
 	resp := &pb.CreateInventoryItemResponse{}
 
 	sqlstring := `INSERT INTO tb_InventoryItem (dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, intVersion, inbMserviceId, inbSubareaId, 
@@ -676,7 +661,7 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -689,9 +674,9 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 	if err == nil {
 		itemId, err := res.LastInsertId()
 		if err != nil {
-			s.logger.Printf("LastInsertId err: %v\n", err)
+			level.Error(s.logger).Log("what", "LastInsertId", "error", err)
 		} else {
-			s.logger.Printf("itemId: %d", itemId)
+			level.Debug(s.logger).Log("itemId", itemId)
 		}
 
 		resp.InventoryItemId = itemId
@@ -699,7 +684,7 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -708,7 +693,6 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 
 // update an existing inventory item
 func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInventoryItemRequest) (*pb.UpdateInventoryItemResponse, error) {
-	s.logger.Printf("UpdateInventoryItem called, aid: %d, itemId: %d\n", req.GetMserviceId(), req.GetInventoryItemId())
 	resp := &pb.UpdateInventoryItemResponse{}
 
 	sqlstring := `UPDATE tb_InventoryItem SET dtmModified = NOW(), intVersion = intVersion + 1, inbSubareaId = ?, intItemTypeId = ?, 
@@ -717,7 +701,7 @@ func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInve
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -739,7 +723,7 @@ func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInve
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -748,7 +732,6 @@ func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInve
 
 // delete an existing inventory item
 func (s *invService) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInventoryItemRequest) (*pb.DeleteInventoryItemResponse, error) {
-	s.logger.Printf("DeleteInventoryItem called, aid: %d, itemId: %d\n", req.GetMserviceId(), req.GetInventoryItemId())
 	resp := &pb.DeleteInventoryItemResponse{}
 
 	sqlstring := `UPDATE tb_InventoryItem SET dtmDeleted = NOW(), bitIsDeleted = 1, intVersion = intVersion + 1
@@ -756,7 +739,7 @@ func (s *invService) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInve
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -776,7 +759,7 @@ func (s *invService) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInve
 	} else {
 		resp.ErrorCode = 501
 		resp.ErrorMessage = err.Error()
-		s.logger.Printf("err: %v\n", err)
+		level.Error(s.logger).Log("what", "Exec", "error", err)
 		err = nil
 	}
 
@@ -785,7 +768,6 @@ func (s *invService) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInve
 
 // get an inventory item by id
 func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryItemRequest) (*pb.GetInventoryItemResponse, error) {
-	s.logger.Printf("GetInventoryItem called, aid: %d, itemId: %d\n", req.GetMserviceId(), req.GetInventoryItemId())
 	resp := &pb.GetInventoryItemResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
@@ -797,7 +779,7 @@ func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryI
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -831,7 +813,7 @@ func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryI
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 	}
@@ -841,7 +823,6 @@ func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryI
 
 // get all inventory items for a product id
 func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.GetInventoryItemsByProductRequest) (*pb.GetInventoryItemsByProductResponse, error) {
-	s.logger.Printf("GetInventoryItemsByProduct called, aid: %d, productId: %d\n", req.GetMserviceId(), req.GetProductId())
 	resp := &pb.GetInventoryItemsByProductResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
@@ -853,7 +834,7 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -864,7 +845,7 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 	rows, err := stmt.Query(req.GetProductId(), req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -882,7 +863,7 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
 			&item.InventoryItemId, &typeName, &productName)
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -905,8 +886,6 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 
 // get all inventory items in a subarea
 func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.GetInventoryItemsBySubareaRequest) (*pb.GetInventoryItemsBySubareaResponse, error) {
-	s.logger.Printf("GetInventoryItemsBySubarea called, aid: %d, subareaId: %d\n", req.GetMserviceId(), req.GetSubareaId())
-
 	resp := &pb.GetInventoryItemsBySubareaResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
@@ -918,7 +897,7 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -929,7 +908,7 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 	rows, err := stmt.Query(req.GetSubareaId(), req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -947,7 +926,7 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
 			&item.InventoryItemId, &typeName, &productName)
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -970,7 +949,6 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 
 // get all inventory items in a facility
 func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.GetInventoryItemsByFacilityRequest) (*pb.GetInventoryItemsByFacilityResponse, error) {
-	s.logger.Printf("GetInventoryItemsByFacility called, aid: %d, facilityId: %d\n", req.GetMserviceId(), req.GetFacilityId())
 	resp := &pb.GetInventoryItemsByFacilityResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
@@ -983,7 +961,7 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -994,7 +972,7 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 	rows, err := stmt.Query(req.GetFacilityId(), req.GetMserviceId())
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -1012,7 +990,7 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
 			&item.InventoryItemId, &typeName, &productName)
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
@@ -1035,7 +1013,6 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 
 // get current server version and uptime - health check
 func (s *invService) GetServerVersion(ctx context.Context, req *pb.GetServerVersionRequest) (*pb.GetServerVersionResponse, error) {
-	s.logger.Printf("GetServerVersion called\n")
 	resp := &pb.GetServerVersionResponse{}
 
 	currentSecs := time.Now().Unix()

@@ -19,6 +19,8 @@ vendor/*
 
 inventory.sublime-*
 
+.idea/*
+
 cmd/invclient/invclient
 cmd/invserver/invserver
 cmd/invserver/invserver_arm

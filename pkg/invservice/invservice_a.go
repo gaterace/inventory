@@ -15,6 +15,7 @@ package invservice
 
 import (
 	"database/sql"
+	"github.com/go-kit/kit/log/level"
 
 	"github.com/gaterace/dml-go/pkg/dml"
 
@@ -38,7 +39,7 @@ func (s *invService) GetFacilityHelper(mserviceId int64, facilityId int64) (*gen
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -62,7 +63,7 @@ func (s *invService) GetFacilityHelper(mserviceId int64, facilityId int64) (*gen
 		resp.ErrorMessage = "not found"
 
 	} else {
-		s.logger.Printf("queryRow failed: %v\n", err)
+		level.Error(s.logger).Log("what", "QueryRow", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 
@@ -86,7 +87,7 @@ func (s *invService) GetSubareasHelper(mserviceId int64, facilityId int64) (*gen
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
-		s.logger.Printf("db.Prepare sqlstring failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = "db.Prepare failed"
 		return resp, nil
@@ -97,7 +98,7 @@ func (s *invService) GetSubareasHelper(mserviceId int64, facilityId int64) (*gen
 	rows, err := stmt.Query(mserviceId, facilityId)
 
 	if err != nil {
-		s.logger.Printf("query failed: %v\n", err)
+		level.Error(s.logger).Log("what", "Query", "error", err)
 		resp.ErrorCode = 500
 		resp.ErrorMessage = err.Error()
 		return resp, nil
@@ -116,7 +117,7 @@ func (s *invService) GetSubareasHelper(mserviceId int64, facilityId int64) (*gen
 			&subarea.SubareaName, &facility, &subtype)
 
 		if err != nil {
-			s.logger.Printf("query rows scan  failed: %v\n", err)
+			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
 			resp.ErrorMessage = err.Error()
 			return resp, nil
