@@ -37,6 +37,11 @@ import (
 
 var NotImplemented = errors.New("not implemented")
 
+const (
+	tokenExpiredMatch = "Token is expired"
+	tokenExpiredMessage = "token is expired"
+)
+
 type InvAuth struct {
 	logger          log.Logger
 	db              *sql.DB
@@ -200,9 +205,9 @@ func (s *InvAuth) CreateFacility(ctx context.Context, req *pb.CreateFacilityRequ
 			resp, err = s.invService.CreateFacility(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -230,9 +235,9 @@ func (s *InvAuth) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityRequ
 			resp, err =  s.invService.UpdateFacility(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -260,9 +265,9 @@ func (s *InvAuth) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityRequ
 			resp, err =  s.invService.DeleteFacility(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -290,9 +295,9 @@ func (s *InvAuth) GetFacility(ctx context.Context, req *pb.GetFacilityRequest) (
 			resp, err = s.invService.GetFacility(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -320,9 +325,9 @@ func (s *InvAuth) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReques
 			resp, err = s.invService.GetFacilities(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -350,9 +355,9 @@ func (s *InvAuth) GetFacilityWrapper(ctx context.Context, req *pb.GetFacilityWra
 			resp, err =  s.invService.GetFacilityWrapper(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 		resp.ErrorCode = 498
-		resp.ErrorMessage = "token is expired"
+		resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -380,9 +385,9 @@ func (s *InvAuth) CreateSubareaType(ctx context.Context, req *pb.CreateSubareaTy
 			resp, err = s.invService.CreateSubareaType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -410,9 +415,9 @@ func (s *InvAuth) UpdateSubareaType(ctx context.Context, req *pb.UpdateSubareaTy
 			resp, err = s.invService.UpdateSubareaType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -440,9 +445,9 @@ func (s *InvAuth) DeleteSubareaType(ctx context.Context, req *pb.DeleteSubareaTy
 			resp, err = s.invService.DeleteSubareaType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -470,9 +475,9 @@ func (s *InvAuth) GetSubareaType(ctx context.Context, req *pb.GetSubareaTypeRequ
 			resp, err = s.invService.GetSubareaType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -500,9 +505,9 @@ func (s *InvAuth) GetSubareaTypes(ctx context.Context, req *pb.GetSubareaTypesRe
 			resp, err = s.invService.GetSubareaTypes(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -530,9 +535,9 @@ func (s *InvAuth) CreateItemType(ctx context.Context, req *pb.CreateItemTypeRequ
 			resp, err = s.invService.CreateItemType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -560,9 +565,9 @@ func (s *InvAuth) UpdateItemType(ctx context.Context, req *pb.UpdateItemTypeRequ
 			resp, err = s.invService.UpdateItemType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -590,9 +595,9 @@ func (s *InvAuth) DeleteItemType(ctx context.Context, req *pb.DeleteItemTypeRequ
 			resp, err = s.invService.DeleteItemType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -620,9 +625,9 @@ func (s *InvAuth) GetItemType(ctx context.Context, req *pb.GetItemTypeRequest) (
 			resp, err = s.invService.GetItemType(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -650,9 +655,9 @@ func (s *InvAuth) GetItemTypes(ctx context.Context, req *pb.GetItemTypesRequest)
 			resp, err = s.invService.GetItemTypes(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -680,9 +685,9 @@ func (s *InvAuth) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReques
 			resp, err = s.invService.CreateSubarea(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -711,9 +716,9 @@ func (s *InvAuth) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReques
 			resp, err = s.invService.UpdateSubarea(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -741,9 +746,9 @@ func (s *InvAuth) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaReques
 			resp, err = s.invService.DeleteSubarea(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -772,9 +777,9 @@ func (s *InvAuth) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) (*p
 			resp, err = s.invService.GetSubarea(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -802,9 +807,9 @@ func (s *InvAuth) GetSubareas(ctx context.Context, req *pb.GetSubareasRequest) (
 			resp, err = s.invService.GetSubareas(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -832,9 +837,9 @@ func (s *InvAuth) CreateProduct(ctx context.Context, req *pb.CreateProductReques
 			resp, err = s.invService.CreateProduct(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -862,9 +867,9 @@ func (s *InvAuth) UpdateProduct(ctx context.Context, req *pb.UpdateProductReques
 			resp, err = s.invService.UpdateProduct(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -892,9 +897,9 @@ func (s *InvAuth) DeleteProduct(ctx context.Context, req *pb.DeleteProductReques
 			resp, err = s.invService.DeleteProduct(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -922,9 +927,9 @@ func (s *InvAuth) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*p
 			resp, err = s.invService.GetProduct(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -952,9 +957,9 @@ func (s *InvAuth) GetProducts(ctx context.Context, req *pb.GetProductsRequest) (
 			resp, err = s.invService.GetProducts(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -982,9 +987,9 @@ func (s *InvAuth) CreateInventoryItem(ctx context.Context, req *pb.CreateInvento
 			resp, err = s.invService.CreateInventoryItem(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1012,9 +1017,9 @@ func (s *InvAuth) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInvento
 			resp, err =  s.invService.UpdateInventoryItem(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1042,9 +1047,9 @@ func (s *InvAuth) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInvento
 			resp, err =  s.invService.DeleteInventoryItem(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1072,9 +1077,9 @@ func (s *InvAuth) GetInventoryItem(ctx context.Context, req *pb.GetInventoryItem
 			resp, err =  s.invService.GetInventoryItem(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1102,9 +1107,9 @@ func (s *InvAuth) GetInventoryItemsByProduct(ctx context.Context, req *pb.GetInv
 			resp, err =  s.invService.GetInventoryItemsByProduct(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1132,9 +1137,9 @@ func (s *InvAuth) GetInventoryItemsBySubarea(ctx context.Context, req *pb.GetInv
 			resp, err =  s.invService.GetInventoryItemsBySubarea(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -1162,9 +1167,9 @@ func (s *InvAuth) GetInventoryItemsByFacility(ctx context.Context, req *pb.GetIn
 			return s.invService.GetInventoryItemsByFacility(ctx, req)
 		}
 	} else {
-		if err.Error() == "Token is expired" {
+		if err.Error() == tokenExpiredMatch {
 			resp.ErrorCode = 498
-			resp.ErrorMessage = "token is expired"
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
