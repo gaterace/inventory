@@ -1,6 +1,6 @@
 # Inventory
 
-Copyright 2019 Demian Harvill
+Copyright 2019-2020 Demian Harvill
 
 ## Overview
 

@@ -1,4 +1,4 @@
-// Copyright 2019 Demian Harvill
+// Copyright 2019-2020 Demian Harvill
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -20,9 +20,10 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/go-kit/kit/log"
 	"github.com/go-kit/kit/log/level"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	_ "github.com/go-sql-driver/mysql"
@@ -38,7 +39,7 @@ import (
 var NotImplemented = errors.New("not implemented")
 
 const (
-	tokenExpiredMatch = "Token is expired"
+	tokenExpiredMatch   = "Token is expired"
 	tokenExpiredMessage = "token is expired"
 )
 
@@ -232,7 +233,7 @@ func (s *InvAuth) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityRequ
 	if err == nil {
 		if HasAdminAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.UpdateFacility(ctx, req)
+			resp, err = s.invService.UpdateFacility(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -262,7 +263,7 @@ func (s *InvAuth) DeleteFacility(ctx context.Context, req *pb.DeleteFacilityRequ
 	if err == nil {
 		if HasAdminAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.DeleteFacility(ctx, req)
+			resp, err = s.invService.DeleteFacility(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -352,12 +353,12 @@ func (s *InvAuth) GetFacilityWrapper(ctx context.Context, req *pb.GetFacilityWra
 	if err == nil {
 		if HasReadAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.GetFacilityWrapper(ctx, req)
+			resp, err = s.invService.GetFacilityWrapper(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
-		resp.ErrorCode = 498
-		resp.ErrorMessage = tokenExpiredMessage
+			resp.ErrorCode = 498
+			resp.ErrorMessage = tokenExpiredMessage
 		}
 
 		err = nil
@@ -698,7 +699,6 @@ func (s *InvAuth) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReques
 		"subarea", req.GetSubareaName(),
 		"errcode", resp.GetErrorCode(), "duration", duration)
 
-
 	return resp, err
 }
 
@@ -758,7 +758,6 @@ func (s *InvAuth) DeleteSubarea(ctx context.Context, req *pb.DeleteSubareaReques
 	level.Info(s.logger).Log("endpoint", "DeleteSubarea",
 		"subareaid", req.GetSubareaId(),
 		"errcode", resp.GetErrorCode(), "duration", duration)
-
 
 	return resp, err
 }
@@ -1014,7 +1013,7 @@ func (s *InvAuth) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInvento
 	if err == nil {
 		if HasRWAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.UpdateInventoryItem(ctx, req)
+			resp, err = s.invService.UpdateInventoryItem(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -1044,7 +1043,7 @@ func (s *InvAuth) DeleteInventoryItem(ctx context.Context, req *pb.DeleteInvento
 	if err == nil {
 		if HasRWAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.DeleteInventoryItem(ctx, req)
+			resp, err = s.invService.DeleteInventoryItem(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -1074,7 +1073,7 @@ func (s *InvAuth) GetInventoryItem(ctx context.Context, req *pb.GetInventoryItem
 	if err == nil {
 		if HasReadAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.GetInventoryItem(ctx, req)
+			resp, err = s.invService.GetInventoryItem(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -1104,7 +1103,7 @@ func (s *InvAuth) GetInventoryItemsByProduct(ctx context.Context, req *pb.GetInv
 	if err == nil {
 		if HasReadAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.GetInventoryItemsByProduct(ctx, req)
+			resp, err = s.invService.GetInventoryItemsByProduct(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {
@@ -1134,7 +1133,7 @@ func (s *InvAuth) GetInventoryItemsBySubarea(ctx context.Context, req *pb.GetInv
 	if err == nil {
 		if HasReadAccess(claims) {
 			req.MserviceId = GetInt64FromClaims(claims, "aid")
-			resp, err =  s.invService.GetInventoryItemsBySubarea(ctx, req)
+			resp, err = s.invService.GetInventoryItemsBySubarea(ctx, req)
 		}
 	} else {
 		if err.Error() == tokenExpiredMatch {

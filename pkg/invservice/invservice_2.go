@@ -1,4 +1,4 @@
-// Copyright 2019 Demian Harvill
+// Copyright 2019-2020 Demian Harvill
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -16,9 +16,10 @@ package invservice
 import (
 	"context"
 	"database/sql"
-	"github.com/go-kit/kit/log/level"
 	"strings"
 	"time"
+
+	"github.com/go-kit/kit/log/level"
 
 	"github.com/gaterace/dml-go/pkg/dml"
 
@@ -1016,7 +1017,7 @@ func (s *invService) GetServerVersion(ctx context.Context, req *pb.GetServerVers
 	resp := &pb.GetServerVersionResponse{}
 
 	currentSecs := time.Now().Unix()
-	resp.ServerVersion = "v0.9.2"
+	resp.ServerVersion = "v0.9.3"
 	resp.ServerUptime = currentSecs - s.startSecs
 
 	return resp, nil

@@ -1,4 +1,4 @@
-// Copyright 2019 Demian Harvill
+// Copyright 2019-2020 Demian Harvill
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -16,12 +16,13 @@ package main
 
 import (
 	"fmt"
-	"github.com/go-kit/kit/log"
-	"github.com/go-kit/kit/log/level"
 	"io"
 	"net"
 	"os"
 	"strconv"
+
+	"github.com/go-kit/kit/log"
+	"github.com/go-kit/kit/log/level"
 
 	"github.com/gaterace/inventory/pkg/invauth"
 	"github.com/gaterace/inventory/pkg/invservice"
@@ -80,7 +81,6 @@ func main() {
 	level.Info(logger).Log("db_user", db_user)
 	level.Info(logger).Log("db_transport", db_transport)
 	level.Info(logger).Log("jwt_pub_file", jwt_pub_file)
-
 
 	if port == 0 {
 		port = 50052
