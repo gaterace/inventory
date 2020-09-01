@@ -250,8 +250,8 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 	}
 
 	sqlstring := `INSERT INTO tb_Subarea (dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, intVersion, inbMserviceId, 
-		inbFacilityId, inbParentSubareaId, intPosition, intSubareaTypeId, chvSubareaName) 
-		VALUES(NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?, ?, ?)`
+		inbFacilityId, inbParentSubareaId, intPosition, intSubareaTypeId, chvSubareaName, chvJsonData) 
+		VALUES(NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
@@ -264,7 +264,7 @@ func (s *invService) CreateSubarea(ctx context.Context, req *pb.CreateSubareaReq
 	defer stmt.Close()
 
 	res, err := stmt.Exec(req.GetMserviceId(), req.GetFacilityId(), req.GetParentSubareaId(), req.GetPosition(),
-		req.GetSubareaTypeId(), name)
+		req.GetSubareaTypeId(), name, req.GetJsonData())
 
 	if err == nil {
 		subareaId, err := res.LastInsertId()
@@ -298,7 +298,7 @@ func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReq
 	}
 
 	sqlstring := `UPDATE tb_Subarea SET dtmModified = NOW(), intVersion = intVersion + 1, inbParentSubareaId = ?, 
-	intPosition = ?, intSubareaTypeId = ?, chvSubareaName = ? WHERE inbSubareaId = ? AND inbMserviceId = ? 
+	intPosition = ?, intSubareaTypeId = ?, chvSubareaName = ?, chvJsonData = ? WHERE inbSubareaId = ? AND inbMserviceId = ? 
 	AND intVersion= ? AND bitIsDeleted= 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -312,7 +312,7 @@ func (s *invService) UpdateSubarea(ctx context.Context, req *pb.UpdateSubareaReq
 	defer stmt.Close()
 
 	res, err := stmt.Exec(req.GetParentSubareaId(), req.GetPosition(), req.GetSubareaTypeId(), req.GetSubareaName(),
-		req.GetSubareaId(), req.GetMserviceId(), req.GetVersion())
+		req.GetJsonData(), req.GetSubareaId(), req.GetMserviceId(), req.GetVersion())
 
 	if err == nil {
 		rowsAffected, _ := res.RowsAffected()
@@ -373,7 +373,7 @@ func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) 
 	resp := &pb.GetSubareaResponse{}
 
 	sqlstring := `SELECT s.inbSubareaId, s.dtmCreated, s.dtmModified, s.intVersion, s.inbMserviceId, s.inbFacilityId, 
-	s.inbParentSubareaId, s.intPosition, s.intSubareaTypeId, s.chvSubareaName, f.chvFacilityName, t.chvSubareaTypeName 
+	s.inbParentSubareaId, s.intPosition, s.intSubareaTypeId, s.chvSubareaName, s.chvJsonData, f.chvFacilityName, t.chvSubareaTypeName 
 	FROM tb_Subarea AS s 
 	LEFT JOIN tb_Facility AS f ON s.inbFacilityId = f.inbFacilityId
 	LEFT JOIN tb_SubareaType AS t ON  s.inbMserviceId = t.inbMserviceId AND s.intSubareaTypeId = t.intSubareaTypeId
@@ -396,7 +396,8 @@ func (s *invService) GetSubarea(ctx context.Context, req *pb.GetSubareaRequest) 
 	var subtype sql.NullString
 
 	err = stmt.QueryRow(req.GetMserviceId(), req.GetSubareaId()).Scan(&subarea.SubareaId, &created, &modified, &subarea.Version, &subarea.MserviceId,
-		&subarea.FacilityId, &subarea.ParentSubareaId, &subarea.Position, &subarea.SubareaTypeId, &subarea.SubareaName, &facility, &subtype)
+		&subarea.FacilityId, &subarea.ParentSubareaId, &subarea.Position, &subarea.SubareaTypeId, &subarea.SubareaName,
+		&subarea.JsonData, &facility, &subtype)
 
 	if err == nil {
 		subarea.Created = dml.DateTimeFromString(created)
@@ -447,7 +448,7 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 	}
 
 	sqlstring := `INSERT INTO tb_Product (dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, intVersion, inbMserviceId, 
-		chvSku, chvProductName, chvComment) VALUES (NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?)`
+		chvSku, chvProductName, chvComment, chvJsonData) VALUES (NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?, ?)`
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
@@ -459,7 +460,7 @@ func (s *invService) CreateProduct(ctx context.Context, req *pb.CreateProductReq
 
 	defer stmt.Close()
 
-	res, err := stmt.Exec(req.GetMserviceId(), req.GetSku(), name, req.GetComment())
+	res, err := stmt.Exec(req.GetMserviceId(), req.GetSku(), name, req.GetComment(), req.GetJsonData())
 	if err == nil {
 		productId, err := res.LastInsertId()
 		if err != nil {
@@ -491,7 +492,8 @@ func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq
 		return resp, nil
 	}
 
-	sqlstring := `UPDATE tb_Product SET dtmModified = NOW(), intVersion = intVersion + 1, chvSku = ?, chvProductName = ?, chvComment = ?
+	sqlstring := `UPDATE tb_Product SET dtmModified = NOW(), intVersion = intVersion + 1, chvSku = ?, chvProductName = ?, 
+	chvComment = ?, chvJsonData = ?
 	WHERE inbProductId = ? AND inbMserviceId = ? AND intVersion = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -504,7 +506,8 @@ func (s *invService) UpdateProduct(ctx context.Context, req *pb.UpdateProductReq
 
 	defer stmt.Close()
 
-	res, err := stmt.Exec(req.GetSku(), name, req.GetComment(), req.GetProductId(), req.GetMserviceId(), req.GetVersion())
+	res, err := stmt.Exec(req.GetSku(), name, req.GetComment(), req.GetJsonData(), req.GetProductId(),
+		req.GetMserviceId(), req.GetVersion())
 	if err == nil {
 		rowsAffected, _ := res.RowsAffected()
 		if rowsAffected == 1 {
@@ -564,7 +567,8 @@ func (s *invService) DeleteProduct(ctx context.Context, req *pb.DeleteProductReq
 func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) (*pb.GetProductResponse, error) {
 	resp := &pb.GetProductResponse{}
 
-	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, chvComment
+	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, 
+	chvComment, chvJsonData
 	FROM tb_Product WHERE inbProductId = ? AND inbMserviceId = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -582,7 +586,7 @@ func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) 
 	var product pb.Product
 
 	err = stmt.QueryRow(req.GetProductId(), req.GetMserviceId()).Scan(&product.ProductId, &created, &modified, &product.Version,
-		&product.MserviceId, &product.Sku, &product.ProductName, &product.Comment)
+		&product.MserviceId, &product.Sku, &product.ProductName, &product.Comment, &product.JsonData)
 
 	if err == nil {
 		product.Created = dml.DateTimeFromString(created)
@@ -606,7 +610,8 @@ func (s *invService) GetProduct(ctx context.Context, req *pb.GetProductRequest) 
 func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest) (*pb.GetProductsResponse, error) {
 	resp := &pb.GetProductsResponse{}
 
-	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, chvComment
+	sqlstring := `SELECT inbProductId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvSku, chvProductName, 
+	chvComment, chvJsonData
 	FROM tb_Product WHERE inbMserviceId = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -635,7 +640,7 @@ func (s *invService) GetProducts(ctx context.Context, req *pb.GetProductsRequest
 		var product pb.Product
 
 		err := rows.Scan(&product.ProductId, &created, &modified, &product.Version,
-			&product.MserviceId, &product.Sku, &product.ProductName, &product.Comment)
+			&product.MserviceId, &product.Sku, &product.ProductName, &product.Comment, &product.JsonData)
 
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)
@@ -657,8 +662,8 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 	resp := &pb.CreateInventoryItemResponse{}
 
 	sqlstring := `INSERT INTO tb_InventoryItem (dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, intVersion, inbMserviceId, inbSubareaId, 
-		intItemTypeId, intQuantity, chvSerialNumber, inbProductId) 
-		VALUES (NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?, ?, ?)`
+		intItemTypeId, intQuantity, chvSerialNumber, inbProductId, chvJsonData) 
+		VALUES (NOW(), NOW(), NOW(), 0, 1, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
@@ -670,7 +675,8 @@ func (s *invService) CreateInventoryItem(ctx context.Context, req *pb.CreateInve
 
 	defer stmt.Close()
 
-	res, err := stmt.Exec(req.GetMserviceId(), req.GetSubareaId(), req.GetItemTypeId(), req.GetQuantity(), req.GetSerialNumber(), req.GetProductId())
+	res, err := stmt.Exec(req.GetMserviceId(), req.GetSubareaId(), req.GetItemTypeId(), req.GetQuantity(),
+		req.GetSerialNumber(), req.GetProductId(), req.GetJsonData())
 
 	if err == nil {
 		itemId, err := res.LastInsertId()
@@ -697,7 +703,7 @@ func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInve
 	resp := &pb.UpdateInventoryItemResponse{}
 
 	sqlstring := `UPDATE tb_InventoryItem SET dtmModified = NOW(), intVersion = intVersion + 1, inbSubareaId = ?, intItemTypeId = ?, 
-	intQuantity = ?, chvSerialNumber = ?, inbProductId = ? WHERE inbInventoryItemId= ? AND inbMserviceId = ? AND intVersion = ? 
+	intQuantity = ?, chvSerialNumber = ?, inbProductId = ?, chvJsonData = ? WHERE inbInventoryItemId= ? AND inbMserviceId = ? AND intVersion = ? 
 	AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -711,7 +717,7 @@ func (s *invService) UpdateInventoryItem(ctx context.Context, req *pb.UpdateInve
 	defer stmt.Close()
 
 	res, err := stmt.Exec(req.GetSubareaId(), req.GetItemTypeId(), req.GetQuantity(), req.GetSerialNumber(), req.GetProductId(),
-		req.GetInventoryItemId(), req.GetMserviceId(), req.GetVersion())
+		req.GetJsonData(), req.GetInventoryItemId(), req.GetMserviceId(), req.GetVersion())
 
 	if err == nil {
 		rowsAffected, _ := res.RowsAffected()
@@ -772,7 +778,8 @@ func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryI
 	resp := &pb.GetInventoryItemResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
-	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, t.chvItemTypeName, p.chvProductName
+	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, i.chvJsonData,
+	t.chvItemTypeName, p.chvProductName
 	FROM tb_InventoryItem AS i
 	LEFT JOIN tb_ItemType as t ON  i.inbMserviceId = t.inbMserviceId AND i.intItemTypeId = t.intItemTypeId
 	LEFT JOIN tb_Product as p ON i.inbProductId = p.inbProductId
@@ -796,7 +803,7 @@ func (s *invService) GetInventoryItem(ctx context.Context, req *pb.GetInventoryI
 
 	err = stmt.QueryRow(req.GetInventoryItemId(), req.GetMserviceId()).Scan(&item.InventoryItemId, &created, &modified,
 		&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
-		&item.InventoryItemId, &typeName, &productName)
+		&item.ProductId, &item.JsonData, &typeName, &productName)
 
 	if err == nil {
 		item.Created = dml.DateTimeFromString(created)
@@ -827,7 +834,8 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 	resp := &pb.GetInventoryItemsByProductResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
-	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, t.chvItemTypeName, p.chvProductName
+	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, i.chvJsonData,
+	t.chvItemTypeName, p.chvProductName
 	FROM tb_InventoryItem AS i
 	LEFT JOIN tb_ItemType as t ON  i.inbMserviceId = t.inbMserviceId AND i.intItemTypeId = t.intItemTypeId
 	LEFT JOIN tb_Product as p ON i.inbProductId = p.inbProductId
@@ -862,7 +870,7 @@ func (s *invService) GetInventoryItemsByProduct(ctx context.Context, req *pb.Get
 
 		err := rows.Scan(&item.InventoryItemId, &created, &modified,
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
-			&item.InventoryItemId, &typeName, &productName)
+			&item.ProductId, &item.JsonData, &typeName, &productName)
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
@@ -890,7 +898,8 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 	resp := &pb.GetInventoryItemsBySubareaResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
-	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, t.chvItemTypeName, p.chvProductName
+	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, i.chvJsonData, 
+	t.chvItemTypeName, p.chvProductName
 	FROM tb_InventoryItem AS i
 	LEFT JOIN tb_ItemType as t ON  i.inbMserviceId = t.inbMserviceId AND i.intItemTypeId = t.intItemTypeId
 	LEFT JOIN tb_Product as p ON i.inbProductId = p.inbProductId
@@ -925,7 +934,7 @@ func (s *invService) GetInventoryItemsBySubarea(ctx context.Context, req *pb.Get
 
 		err := rows.Scan(&item.InventoryItemId, &created, &modified,
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
-			&item.InventoryItemId, &typeName, &productName)
+			&item.ProductId, &item.JsonData, &typeName, &productName)
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
@@ -953,7 +962,8 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 	resp := &pb.GetInventoryItemsByFacilityResponse{}
 
 	sqlstring := `SELECT i.inbInventoryItemId, i.dtmCreated, i.dtmModified, i.intVersion, i.inbMserviceId,
-	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, t.chvItemTypeName, p.chvProductName
+	i.inbSubareaId, i.intItemTypeId, i.intQuantity, i.chvSerialNumber, i.inbProductId, i.chvJsonData,
+	t.chvItemTypeName, p.chvProductName
 	FROM tb_InventoryItem AS i
 	JOIN tb_Subarea AS a ON i.inbSubareaId = a.inbSubareaId
 	LEFT JOIN tb_ItemType as t ON  i.inbMserviceId = t.inbMserviceId AND i.intItemTypeId = t.intItemTypeId
@@ -989,7 +999,7 @@ func (s *invService) GetInventoryItemsByFacility(ctx context.Context, req *pb.Ge
 
 		err := rows.Scan(&item.InventoryItemId, &created, &modified,
 			&item.Version, &item.MserviceId, &item.SubareaId, &item.ItemTypeId, &item.Quantity, &item.SerialNumber,
-			&item.InventoryItemId, &typeName, &productName)
+			&item.ProductId, &item.JsonData, &typeName, &productName)
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)
 			resp.ErrorCode = 500
@@ -1017,8 +1027,209 @@ func (s *invService) GetServerVersion(ctx context.Context, req *pb.GetServerVers
 	resp := &pb.GetServerVersionResponse{}
 
 	currentSecs := time.Now().Unix()
-	resp.ServerVersion = "v0.9.3"
+	resp.ServerVersion = "v0.9.4"
 	resp.ServerUptime = currentSecs - s.startSecs
 
 	return resp, nil
+}
+
+// create an entity schema
+func (s *invService) CreateEntitySchema(ctx context.Context, req *pb.CreateEntitySchemaRequest) (*pb.CreateEntitySchemaResponse, error) {
+	resp := &pb.CreateEntitySchemaResponse{}
+	var err error
+
+	entityName := strings.ToLower(req.GetEntityName())
+
+	_, found := supportedEntities[entityName]
+
+	if !found {
+		resp.ErrorCode = 401
+		resp.ErrorMessage = "schema entity name not supported"
+		return resp, nil
+	}
+
+	sqlstring := `INSERT INTO tb_EntitySchema (inbMserviceId, chvEntityName, dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, 
+	intVersion, chvJsonSchema) VALUES(?, ?, NOW(), NOW(), NOW(), 0, 1, ?)`
+
+	stmt, err := s.db.Prepare(sqlstring)
+	if err != nil {
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = "db.Prepare failed"
+		return resp, nil
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(req.GetMserviceId(), entityName, req.GetJsonSchema())
+	if err == nil {
+		resp.Version = 1
+	} else {
+		resp.ErrorCode = 501
+		resp.ErrorMessage = err.Error()
+		level.Error(s.logger).Log("what", "Exec", "error", err)
+		err = nil
+	}
+
+	return resp, err
+}
+
+// update an entity schema
+func (s *invService) UpdateEntitySchema(ctx context.Context, req *pb.UpdateEntitySchemaRequest) (*pb.UpdateEntitySchemaResponse, error) {
+	resp := &pb.UpdateEntitySchemaResponse{}
+	var err error
+
+	entityName := strings.ToLower(req.GetEntityName())
+
+	sqlstring := `UPDATE tb_EntitySchema SET dtmModified = NOW(), intVersion = ?, chvJsonSchema = ?  
+	WHERE inbMserviceId = ? AND chvEntityName = ? AND intVersion = ? AND bitIsDeleted = 0`
+
+	stmt, err := s.db.Prepare(sqlstring)
+	if err != nil {
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = "db.Prepare failed"
+		return resp, nil
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(req.GetVersion() + 1, req.GetJsonSchema(), req.GetMserviceId(), entityName, req.GetVersion())
+
+	if err == nil {
+		resp.Version = req.GetVersion() + 1
+	} else {
+		resp.ErrorCode = 501
+		resp.ErrorMessage = err.Error()
+		level.Error(s.logger).Log("what", "Exec", "error", err)
+		err = nil
+	}
+
+	return resp, err
+}
+
+// delete an entity schema
+func (s *invService) DeleteEntitySchema(ctx context.Context, req *pb.DeleteEntitySchemaRequest) (*pb.DeleteEntitySchemaResponse, error) {
+	resp := &pb.DeleteEntitySchemaResponse{}
+	var err error
+
+	entityName := strings.ToLower(req.GetEntityName())
+
+	sqlstring := `UPDATE tb_EntitySchema SET dtmDeleted = NOW(), intVersion = ?, bitIsDeleted = 1
+	WHERE inbMserviceId = ? AND chvEntityName = ? AND intVersion = ? AND bitIsDeleted = 0`
+
+	stmt, err := s.db.Prepare(sqlstring)
+	if err != nil {
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = "db.Prepare failed"
+		return resp, nil
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(req.GetVersion() + 1, req.GetMserviceId(), entityName, req.GetVersion())
+
+	if err == nil {
+		resp.Version = req.GetVersion() + 1
+	} else {
+		resp.ErrorCode = 501
+		resp.ErrorMessage = err.Error()
+		level.Error(s.logger).Log("what", "Exec", "error", err)
+		err = nil
+	}
+
+	return resp, err
+}
+
+// get an entity schema by name
+func (s *invService) GetEntitySchema(ctx context.Context, req *pb.GetEntitySchemaRequest) (*pb.GetEntitySchemaResponse, error) {
+	resp := &pb.GetEntitySchemaResponse{}
+	var err error
+
+	entityName := strings.ToLower(req.GetEntityName())
+
+	sqlstring := `SELECT inbMserviceId, chvEntityName, dtmCreated, dtmModified, intVersion, chvJsonSchema
+	FROM tb_EntitySchema WHERE inbMserviceId = ? AND chvEntityName = ? AND bitIsDeleted = 0`
+
+	stmt, err := s.db.Prepare(sqlstring)
+	if err != nil {
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = "db.Prepare failed"
+		return resp, nil
+	}
+
+	defer stmt.Close()
+
+	var entity pb.EntitySchema
+	var created string
+	var modified string
+
+	err = stmt.QueryRow(req.GetMserviceId(), entityName).Scan(&entity.MserviceId, &entity.EntityName,
+		&created, &modified, &entity.Version, &entity.JsonSchema)
+
+	if err == nil {
+		entity.Created = dml.DateTimeFromString(created)
+		entity.Modified = dml.DateTimeFromString(modified)
+		resp.EntitySchema = &entity
+	} else {
+		resp.ErrorCode = 501
+		resp.ErrorMessage = err.Error()
+		level.Error(s.logger).Log("what", "Exec", "error", err)
+		err = nil
+	}
+
+	return resp, err
+}
+
+// get all entity schemas for account
+func (s *invService) GetEntitySchemas(ctx context.Context, req *pb.GetEntitySchemasRequest) (*pb.GetEntitySchemasResponse, error) {
+	resp := &pb.GetEntitySchemasResponse{}
+	var err error
+
+	sqlstring := `SELECT inbMserviceId, chvEntityName, dtmCreated, dtmModified, intVersion, chvJsonSchema
+	FROM tb_EntitySchema WHERE inbMserviceId = ? AND bitIsDeleted = 0`
+
+	stmt, err := s.db.Prepare(sqlstring)
+	if err != nil {
+		level.Error(s.logger).Log("what", "Prepare", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = "db.Prepare failed"
+		return resp, nil
+	}
+
+	defer stmt.Close()
+
+	rows, err := stmt.Query(req.GetMserviceId())
+
+	if err != nil {
+		level.Error(s.logger).Log("what", "Query", "error", err)
+		resp.ErrorCode = 500
+		resp.ErrorMessage = err.Error()
+		return resp, nil
+	}
+
+	defer rows.Close()
+
+	for rows.Next() {
+		var entity pb.EntitySchema
+		var created string
+		var modified string
+
+		err = rows.Scan(&entity.MserviceId, &entity.EntityName,
+			&created, &modified, &entity.Version, &entity.JsonSchema)
+		if err != nil {
+			level.Error(s.logger).Log("what", "Scan", "error", err)
+			resp.ErrorCode = 500
+			resp.ErrorMessage = err.Error()
+			return resp, nil
+		}
+
+		entity.Created = dml.DateTimeFromString(created)
+		entity.Modified = dml.DateTimeFromString(modified)
+		resp.EntitySchemas = append(resp.EntitySchemas, &entity)
+	}
+
+	return resp, err
 }

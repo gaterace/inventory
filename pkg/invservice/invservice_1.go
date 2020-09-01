@@ -34,6 +34,13 @@ import (
 
 var NotImplemented = errors.New("not implemented")
 
+var supportedEntities = map[string]bool {
+	"facility": true,
+	"product": true,
+	"subarea": true,
+	"inventoryitem": true }
+
+
 type invService struct {
 	logger    log.Logger
 	db        *sql.DB
@@ -78,7 +85,7 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 	}
 
 	sqlstring := `INSERT INTO tb_Facility (dtmCreated, dtmModified, dtmDeleted, bitIsDeleted, intVersion, 
-		inbMserviceId, chvFacilityName) VALUES(NOW(), NOW(), NOW(), 0, 1, ?, ?)`
+ 		inbMserviceId, chvFacilityName, chvJsonData) VALUES(NOW(), NOW(), NOW(), 0, 1, ?, ?, ?)`
 
 	stmt, err := s.db.Prepare(sqlstring)
 	if err != nil {
@@ -90,7 +97,7 @@ func (s *invService) CreateFacility(ctx context.Context, req *pb.CreateFacilityR
 
 	defer stmt.Close()
 
-	res, err := stmt.Exec(req.GetMserviceId(), name)
+	res, err := stmt.Exec(req.GetMserviceId(), name, req.GetJsonData())
 
 	if err == nil {
 		facilityId, err := res.LastInsertId()
@@ -122,7 +129,8 @@ func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityR
 		return resp, nil
 	}
 
-	sqlstring := `UPDATE tb_Facility SET dtmModified = NOW(), intVersion = intVersion + 1, chvFacilityName = ? 
+	sqlstring := `UPDATE tb_Facility SET dtmModified = NOW(), intVersion = intVersion + 1, chvFacilityName = ?, 
+	chvJsonData = ? 
 	WHERE inbFacilityId = ? AND inbMserviceId = ? AND intVersion = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -135,7 +143,7 @@ func (s *invService) UpdateFacility(ctx context.Context, req *pb.UpdateFacilityR
 
 	defer stmt.Close()
 
-	res, err := stmt.Exec(name, req.GetFacilityId(), req.GetMserviceId(), req.GetVersion())
+	res, err := stmt.Exec(name, req.GetJsonData(), req.GetFacilityId(), req.GetMserviceId(), req.GetVersion())
 	if err == nil {
 		rowsAffected, _ := res.RowsAffected()
 		if rowsAffected == 1 {
@@ -208,7 +216,7 @@ func (s *invService) GetFacility(ctx context.Context, req *pb.GetFacilityRequest
 func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesRequest) (*pb.GetFacilitiesResponse, error) {
 	resp := &pb.GetFacilitiesResponse{}
 
-	sqlstring := `SELECT inbFacilityId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvFacilityName
+	sqlstring := `SELECT inbFacilityId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvFacilityName, chvJsonData
 	FROM tb_Facility WHERE inbMserviceId = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -237,7 +245,7 @@ func (s *invService) GetFacilities(ctx context.Context, req *pb.GetFacilitiesReq
 		var facility pb.Facility
 
 		err := rows.Scan(&facility.FacilityId, &created, &modified,
-			&facility.Version, &facility.MserviceId, &facility.FacilityName)
+			&facility.Version, &facility.MserviceId, &facility.FacilityName, &facility.JsonData)
 
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)

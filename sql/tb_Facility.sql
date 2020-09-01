@@ -22,6 +22,8 @@ CREATE TABLE tb_Facility
     inbMserviceId BIGINT NOT NULL,
     -- facility name
     chvFacilityName VARCHAR(255) NOT NULL,
+    -- data for entity ui extensions
+    chvJsonData VARCHAR(8000) NOT NULL,
 
 
     PRIMARY KEY (inbFacilityId),

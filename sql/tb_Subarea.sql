@@ -30,6 +30,8 @@ CREATE TABLE tb_Subarea
     intSubareaTypeId INT NOT NULL,
     -- subarea name
     chvSubareaName VARCHAR(255) NOT NULL,
+    -- data for entity ui extensions
+    chvJsonData VARCHAR(8000) NOT NULL,
 
 
     PRIMARY KEY (inbSubareaId),

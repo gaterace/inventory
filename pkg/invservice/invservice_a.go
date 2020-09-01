@@ -35,7 +35,7 @@ type genericResponse struct {
 func (s *invService) GetFacilityHelper(mserviceId int64, facilityId int64) (*genericResponse, *pb.Facility) {
 	resp := &genericResponse{}
 
-	sqlstring := `SELECT inbFacilityId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvFacilityName
+	sqlstring := `SELECT inbFacilityId, dtmCreated, dtmModified, intVersion, inbMserviceId, chvFacilityName, chvJsonData
 	FROM tb_Facility WHERE inbFacilityId= ? AND inbMserviceId = ? AND bitIsDeleted = 0`
 
 	stmt, err := s.db.Prepare(sqlstring)
@@ -53,7 +53,7 @@ func (s *invService) GetFacilityHelper(mserviceId int64, facilityId int64) (*gen
 	var facility pb.Facility
 
 	err = stmt.QueryRow(facilityId, mserviceId).Scan(&facility.FacilityId, &created, &modified,
-		&facility.Version, &facility.MserviceId, &facility.FacilityName)
+		&facility.Version, &facility.MserviceId, &facility.FacilityName, &facility.JsonData)
 
 	if err == nil {
 		facility.Created = dml.DateTimeFromString(created)
@@ -79,7 +79,7 @@ func (s *invService) GetSubareasHelper(mserviceId int64, facilityId int64) (*gen
 	subareas := make([]*pb.Subarea, 0)
 
 	sqlstring := `SELECT s.inbSubareaId, s.dtmCreated, s.dtmModified, s.intVersion, s.inbMserviceId, s.inbFacilityId, 
-	s.inbParentSubareaId, s.intPosition, s.intSubareaTypeId, s.chvSubareaName, f.chvFacilityName, t.chvSubareaTypeName 
+	s.inbParentSubareaId, s.intPosition, s.intSubareaTypeId, s.chvSubareaName, s.chvJsonData, f.chvFacilityName, t.chvSubareaTypeName 
 	FROM tb_Subarea AS s 
 	LEFT JOIN tb_Facility AS f ON s.inbFacilityId = f.inbFacilityId
 	LEFT JOIN tb_SubareaType AS t ON s.inbMserviceId = t.inbMserviceId AND s.intSubareaTypeId = t.intSubareaTypeId
@@ -115,7 +115,7 @@ func (s *invService) GetSubareasHelper(mserviceId int64, facilityId int64) (*gen
 
 		err := rows.Scan(&subarea.SubareaId, &created, &modified, &subarea.Version, &subarea.MserviceId,
 			&subarea.FacilityId, &subarea.ParentSubareaId, &subarea.Position, &subarea.SubareaTypeId,
-			&subarea.SubareaName, &facility, &subtype)
+			&subarea.SubareaName, &subarea.JsonData, &facility, &subtype)
 
 		if err != nil {
 			level.Error(s.logger).Log("what", "Scan", "error", err)
@@ -150,6 +150,7 @@ func convertFacilityToWrapper(facility *pb.Facility) *pb.FacilityWrapper {
 	wrap.Version = facility.GetVersion()
 	wrap.MserviceId = facility.GetMserviceId()
 	wrap.FacilityName = facility.GetFacilityName()
+	wrap.JsonData = facility.GetJsonData()
 
 	return &wrap
 }
@@ -171,6 +172,7 @@ func convertSubareaToWrapper(subarea *pb.Subarea) *pb.SubareaWrapper {
 	wrap.SubareaTypeId = subarea.GetSubareaTypeId()
 	wrap.SubareaTypeName = subarea.GetSubareaTypeName()
 	wrap.SubareaName = subarea.GetSubareaName()
+	wrap.JsonData = subarea.GetJsonData()
 
 	return &wrap
 }

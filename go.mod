@@ -8,8 +8,10 @@ require (
 	github.com/go-kit/kit v0.10.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.1
+	github.com/gorilla/mux v1.7.3
 	github.com/juju/gnuflag v0.0.0-20171113085948-2ce1bb71843d
 	github.com/kylelemons/go-gypsy v0.0.0-20160905020020-08cad365cd28
+	github.com/rs/cors v1.7.0
 	golang.org/x/net v0.0.0-20200505041828-1ed23360d12c
 	google.golang.org/grpc v1.29.1
 )

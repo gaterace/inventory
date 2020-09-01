@@ -16,6 +16,7 @@ It has these top-level messages:
 	SubareaWrapper
 	Product
 	InventoryItem
+	EntitySchema
 	CreateFacilityRequest
 	CreateFacilityResponse
 	UpdateFacilityRequest
@@ -84,6 +85,16 @@ It has these top-level messages:
 	GetInventoryItemsByFacilityResponse
 	GetServerVersionRequest
 	GetServerVersionResponse
+	CreateEntitySchemaRequest
+	CreateEntitySchemaResponse
+	UpdateEntitySchemaRequest
+	UpdateEntitySchemaResponse
+	DeleteEntitySchemaRequest
+	DeleteEntitySchemaResponse
+	GetEntitySchemaRequest
+	GetEntitySchemaResponse
+	GetEntitySchemasRequest
+	GetEntitySchemasResponse
 */
 package mserviceinventory
 
@@ -126,6 +137,8 @@ type Facility struct {
 	MserviceId int64 `protobuf:"varint,7,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
 	// facility name
 	FacilityName string `protobuf:"bytes,8,opt,name=facility_name,json=facilityName" json:"facility_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,9,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *Facility) Reset()                    { *m = Facility{} }
@@ -189,6 +202,13 @@ func (m *Facility) GetFacilityName() string {
 	return ""
 }
 
+func (m *Facility) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // inventory facility wrapper
 type FacilityWrapper struct {
 	// facility identifier
@@ -207,8 +227,10 @@ type FacilityWrapper struct {
 	MserviceId int64 `protobuf:"varint,7,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
 	// facility name
 	FacilityName string `protobuf:"bytes,8,opt,name=facility_name,json=facilityName" json:"facility_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,9,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 	// list of child subarea wrappers
-	ChildSubareas []*SubareaWrapper `protobuf:"bytes,9,rep,name=child_subareas,json=childSubareas" json:"child_subareas,omitempty"`
+	ChildSubareas []*SubareaWrapper `protobuf:"bytes,10,rep,name=child_subareas,json=childSubareas" json:"child_subareas,omitempty"`
 }
 
 func (m *FacilityWrapper) Reset()                    { *m = FacilityWrapper{} }
@@ -268,6 +290,13 @@ func (m *FacilityWrapper) GetMserviceId() int64 {
 func (m *FacilityWrapper) GetFacilityName() string {
 	if m != nil {
 		return m.FacilityName
+	}
+	return ""
+}
+
+func (m *FacilityWrapper) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
 	}
 	return ""
 }
@@ -471,6 +500,8 @@ type Subarea struct {
 	SubareaTypeName string `protobuf:"bytes,13,opt,name=subarea_type_name,json=subareaTypeName" json:"subarea_type_name,omitempty"`
 	// subarea name
 	SubareaName string `protobuf:"bytes,14,opt,name=subarea_name,json=subareaName" json:"subarea_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,15,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *Subarea) Reset()                    { *m = Subarea{} }
@@ -576,6 +607,13 @@ func (m *Subarea) GetSubareaName() string {
 	return ""
 }
 
+func (m *Subarea) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // wrapper for inventory subarea within facility
 type SubareaWrapper struct {
 	// subarea identifier
@@ -606,8 +644,10 @@ type SubareaWrapper struct {
 	SubareaTypeName string `protobuf:"bytes,13,opt,name=subarea_type_name,json=subareaTypeName" json:"subarea_type_name,omitempty"`
 	// subarea name
 	SubareaName string `protobuf:"bytes,14,opt,name=subarea_name,json=subareaName" json:"subarea_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,15,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 	// list of child subarea wrappers
-	ChildSubareas []*SubareaWrapper `protobuf:"bytes,15,rep,name=child_subareas,json=childSubareas" json:"child_subareas,omitempty"`
+	ChildSubareas []*SubareaWrapper `protobuf:"bytes,16,rep,name=child_subareas,json=childSubareas" json:"child_subareas,omitempty"`
 }
 
 func (m *SubareaWrapper) Reset()                    { *m = SubareaWrapper{} }
@@ -713,6 +753,13 @@ func (m *SubareaWrapper) GetSubareaName() string {
 	return ""
 }
 
+func (m *SubareaWrapper) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 func (m *SubareaWrapper) GetChildSubareas() []*SubareaWrapper {
 	if m != nil {
 		return m.ChildSubareas
@@ -742,6 +789,8 @@ type Product struct {
 	ProductName string `protobuf:"bytes,9,opt,name=product_name,json=productName" json:"product_name,omitempty"`
 	// entity comment
 	Comment string `protobuf:"bytes,10,opt,name=comment" json:"comment,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,11,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *Product) Reset()                    { *m = Product{} }
@@ -819,6 +868,13 @@ func (m *Product) GetComment() string {
 	return ""
 }
 
+func (m *Product) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // inventory item
 type InventoryItem struct {
 	// inventory item identifier
@@ -849,6 +905,8 @@ type InventoryItem struct {
 	ProductId int64 `protobuf:"varint,13,opt,name=product_id,json=productId" json:"product_id,omitempty"`
 	// product name
 	ProductName string `protobuf:"bytes,14,opt,name=product_name,json=productName" json:"product_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,15,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *InventoryItem) Reset()                    { *m = InventoryItem{} }
@@ -954,18 +1012,108 @@ func (m *InventoryItem) GetProductName() string {
 	return ""
 }
 
+func (m *InventoryItem) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
+// MService inventory extension schema
+type EntitySchema struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+	// name of entity to be extended
+	EntityName string `protobuf:"bytes,2,opt,name=entity_name,json=entityName" json:"entity_name,omitempty"`
+	// creation date
+	Created *dml.DateTime `protobuf:"bytes,3,opt,name=created" json:"created,omitempty"`
+	// modification date
+	Modified *dml.DateTime `protobuf:"bytes,4,opt,name=modified" json:"modified,omitempty"`
+	// deletion date
+	Deleted *dml.DateTime `protobuf:"bytes,5,opt,name=deleted" json:"deleted,omitempty"`
+	// has record been deleted?
+	IsDeleted bool `protobuf:"varint,6,opt,name=is_deleted,json=isDeleted" json:"is_deleted,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,7,opt,name=version" json:"version,omitempty"`
+	// schema for json_data extensions
+	JsonSchema string `protobuf:"bytes,8,opt,name=json_schema,json=jsonSchema" json:"json_schema,omitempty"`
+}
+
+func (m *EntitySchema) Reset()                    { *m = EntitySchema{} }
+func (m *EntitySchema) String() string            { return proto.CompactTextString(m) }
+func (*EntitySchema) ProtoMessage()               {}
+func (*EntitySchema) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+
+func (m *EntitySchema) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+func (m *EntitySchema) GetEntityName() string {
+	if m != nil {
+		return m.EntityName
+	}
+	return ""
+}
+
+func (m *EntitySchema) GetCreated() *dml.DateTime {
+	if m != nil {
+		return m.Created
+	}
+	return nil
+}
+
+func (m *EntitySchema) GetModified() *dml.DateTime {
+	if m != nil {
+		return m.Modified
+	}
+	return nil
+}
+
+func (m *EntitySchema) GetDeleted() *dml.DateTime {
+	if m != nil {
+		return m.Deleted
+	}
+	return nil
+}
+
+func (m *EntitySchema) GetIsDeleted() bool {
+	if m != nil {
+		return m.IsDeleted
+	}
+	return false
+}
+
+func (m *EntitySchema) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *EntitySchema) GetJsonSchema() string {
+	if m != nil {
+		return m.JsonSchema
+	}
+	return ""
+}
+
 // request parameters for method create_facility
 type CreateFacilityRequest struct {
 	// mservice account identifier
 	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
 	// facility name
 	FacilityName string `protobuf:"bytes,2,opt,name=facility_name,json=facilityName" json:"facility_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,3,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *CreateFacilityRequest) Reset()                    { *m = CreateFacilityRequest{} }
 func (m *CreateFacilityRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateFacilityRequest) ProtoMessage()               {}
-func (*CreateFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{8} }
+func (*CreateFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
 
 func (m *CreateFacilityRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -977,6 +1125,13 @@ func (m *CreateFacilityRequest) GetMserviceId() int64 {
 func (m *CreateFacilityRequest) GetFacilityName() string {
 	if m != nil {
 		return m.FacilityName
+	}
+	return ""
+}
+
+func (m *CreateFacilityRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
 	}
 	return ""
 }
@@ -996,7 +1151,7 @@ type CreateFacilityResponse struct {
 func (m *CreateFacilityResponse) Reset()                    { *m = CreateFacilityResponse{} }
 func (m *CreateFacilityResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateFacilityResponse) ProtoMessage()               {}
-func (*CreateFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{9} }
+func (*CreateFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
 
 func (m *CreateFacilityResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1036,12 +1191,14 @@ type UpdateFacilityRequest struct {
 	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
 	// facility name
 	FacilityName string `protobuf:"bytes,4,opt,name=facility_name,json=facilityName" json:"facility_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,5,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *UpdateFacilityRequest) Reset()                    { *m = UpdateFacilityRequest{} }
 func (m *UpdateFacilityRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateFacilityRequest) ProtoMessage()               {}
-func (*UpdateFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{10} }
+func (*UpdateFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
 
 func (m *UpdateFacilityRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1071,6 +1228,13 @@ func (m *UpdateFacilityRequest) GetFacilityName() string {
 	return ""
 }
 
+func (m *UpdateFacilityRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method update_facility
 type UpdateFacilityResponse struct {
 	// method result code
@@ -1084,7 +1248,7 @@ type UpdateFacilityResponse struct {
 func (m *UpdateFacilityResponse) Reset()                    { *m = UpdateFacilityResponse{} }
 func (m *UpdateFacilityResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateFacilityResponse) ProtoMessage()               {}
-func (*UpdateFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{11} }
+func (*UpdateFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
 
 func (m *UpdateFacilityResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1120,7 +1284,7 @@ type DeleteFacilityRequest struct {
 func (m *DeleteFacilityRequest) Reset()                    { *m = DeleteFacilityRequest{} }
 func (m *DeleteFacilityRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteFacilityRequest) ProtoMessage()               {}
-func (*DeleteFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{12} }
+func (*DeleteFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
 
 func (m *DeleteFacilityRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1156,7 +1320,7 @@ type DeleteFacilityResponse struct {
 func (m *DeleteFacilityResponse) Reset()                    { *m = DeleteFacilityResponse{} }
 func (m *DeleteFacilityResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteFacilityResponse) ProtoMessage()               {}
-func (*DeleteFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{13} }
+func (*DeleteFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
 
 func (m *DeleteFacilityResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1190,7 +1354,7 @@ type GetFacilityRequest struct {
 func (m *GetFacilityRequest) Reset()                    { *m = GetFacilityRequest{} }
 func (m *GetFacilityRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilityRequest) ProtoMessage()               {}
-func (*GetFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{14} }
+func (*GetFacilityRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
 
 func (m *GetFacilityRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1219,7 +1383,7 @@ type GetFacilityResponse struct {
 func (m *GetFacilityResponse) Reset()                    { *m = GetFacilityResponse{} }
 func (m *GetFacilityResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilityResponse) ProtoMessage()               {}
-func (*GetFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{15} }
+func (*GetFacilityResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{16} }
 
 func (m *GetFacilityResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1251,7 +1415,7 @@ type GetFacilitiesRequest struct {
 func (m *GetFacilitiesRequest) Reset()                    { *m = GetFacilitiesRequest{} }
 func (m *GetFacilitiesRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilitiesRequest) ProtoMessage()               {}
-func (*GetFacilitiesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{16} }
+func (*GetFacilitiesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{17} }
 
 func (m *GetFacilitiesRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1273,7 +1437,7 @@ type GetFacilitiesResponse struct {
 func (m *GetFacilitiesResponse) Reset()                    { *m = GetFacilitiesResponse{} }
 func (m *GetFacilitiesResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilitiesResponse) ProtoMessage()               {}
-func (*GetFacilitiesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{17} }
+func (*GetFacilitiesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{18} }
 
 func (m *GetFacilitiesResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1307,7 +1471,7 @@ type GetFacilityWrapperRequest struct {
 func (m *GetFacilityWrapperRequest) Reset()                    { *m = GetFacilityWrapperRequest{} }
 func (m *GetFacilityWrapperRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilityWrapperRequest) ProtoMessage()               {}
-func (*GetFacilityWrapperRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{18} }
+func (*GetFacilityWrapperRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{19} }
 
 func (m *GetFacilityWrapperRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1336,7 +1500,7 @@ type GetFacilityWrapperResponse struct {
 func (m *GetFacilityWrapperResponse) Reset()                    { *m = GetFacilityWrapperResponse{} }
 func (m *GetFacilityWrapperResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetFacilityWrapperResponse) ProtoMessage()               {}
-func (*GetFacilityWrapperResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{19} }
+func (*GetFacilityWrapperResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{20} }
 
 func (m *GetFacilityWrapperResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1372,7 +1536,7 @@ type CreateSubareaTypeRequest struct {
 func (m *CreateSubareaTypeRequest) Reset()                    { *m = CreateSubareaTypeRequest{} }
 func (m *CreateSubareaTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateSubareaTypeRequest) ProtoMessage()               {}
-func (*CreateSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{20} }
+func (*CreateSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{21} }
 
 func (m *CreateSubareaTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1408,7 +1572,7 @@ type CreateSubareaTypeResponse struct {
 func (m *CreateSubareaTypeResponse) Reset()                    { *m = CreateSubareaTypeResponse{} }
 func (m *CreateSubareaTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateSubareaTypeResponse) ProtoMessage()               {}
-func (*CreateSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{21} }
+func (*CreateSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{22} }
 
 func (m *CreateSubareaTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1446,7 +1610,7 @@ type UpdateSubareaTypeRequest struct {
 func (m *UpdateSubareaTypeRequest) Reset()                    { *m = UpdateSubareaTypeRequest{} }
 func (m *UpdateSubareaTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateSubareaTypeRequest) ProtoMessage()               {}
-func (*UpdateSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{22} }
+func (*UpdateSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{23} }
 
 func (m *UpdateSubareaTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1489,7 +1653,7 @@ type UpdateSubareaTypeResponse struct {
 func (m *UpdateSubareaTypeResponse) Reset()                    { *m = UpdateSubareaTypeResponse{} }
 func (m *UpdateSubareaTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateSubareaTypeResponse) ProtoMessage()               {}
-func (*UpdateSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{23} }
+func (*UpdateSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{24} }
 
 func (m *UpdateSubareaTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1525,7 +1689,7 @@ type DeleteSubareaTypeRequest struct {
 func (m *DeleteSubareaTypeRequest) Reset()                    { *m = DeleteSubareaTypeRequest{} }
 func (m *DeleteSubareaTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteSubareaTypeRequest) ProtoMessage()               {}
-func (*DeleteSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{24} }
+func (*DeleteSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{25} }
 
 func (m *DeleteSubareaTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1561,7 +1725,7 @@ type DeleteSubareaTypeResponse struct {
 func (m *DeleteSubareaTypeResponse) Reset()                    { *m = DeleteSubareaTypeResponse{} }
 func (m *DeleteSubareaTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteSubareaTypeResponse) ProtoMessage()               {}
-func (*DeleteSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{25} }
+func (*DeleteSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{26} }
 
 func (m *DeleteSubareaTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1595,7 +1759,7 @@ type GetSubareaTypeRequest struct {
 func (m *GetSubareaTypeRequest) Reset()                    { *m = GetSubareaTypeRequest{} }
 func (m *GetSubareaTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaTypeRequest) ProtoMessage()               {}
-func (*GetSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{26} }
+func (*GetSubareaTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{27} }
 
 func (m *GetSubareaTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1624,7 +1788,7 @@ type GetSubareaTypeResponse struct {
 func (m *GetSubareaTypeResponse) Reset()                    { *m = GetSubareaTypeResponse{} }
 func (m *GetSubareaTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaTypeResponse) ProtoMessage()               {}
-func (*GetSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{27} }
+func (*GetSubareaTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{28} }
 
 func (m *GetSubareaTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1656,7 +1820,7 @@ type GetSubareaTypesRequest struct {
 func (m *GetSubareaTypesRequest) Reset()                    { *m = GetSubareaTypesRequest{} }
 func (m *GetSubareaTypesRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaTypesRequest) ProtoMessage()               {}
-func (*GetSubareaTypesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{28} }
+func (*GetSubareaTypesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{29} }
 
 func (m *GetSubareaTypesRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1678,7 +1842,7 @@ type GetSubareaTypesResponse struct {
 func (m *GetSubareaTypesResponse) Reset()                    { *m = GetSubareaTypesResponse{} }
 func (m *GetSubareaTypesResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaTypesResponse) ProtoMessage()               {}
-func (*GetSubareaTypesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{29} }
+func (*GetSubareaTypesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{30} }
 
 func (m *GetSubareaTypesResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1714,7 +1878,7 @@ type CreateItemTypeRequest struct {
 func (m *CreateItemTypeRequest) Reset()                    { *m = CreateItemTypeRequest{} }
 func (m *CreateItemTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateItemTypeRequest) ProtoMessage()               {}
-func (*CreateItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{30} }
+func (*CreateItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{31} }
 
 func (m *CreateItemTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1750,7 +1914,7 @@ type CreateItemTypeResponse struct {
 func (m *CreateItemTypeResponse) Reset()                    { *m = CreateItemTypeResponse{} }
 func (m *CreateItemTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateItemTypeResponse) ProtoMessage()               {}
-func (*CreateItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{31} }
+func (*CreateItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{32} }
 
 func (m *CreateItemTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1788,7 +1952,7 @@ type UpdateItemTypeRequest struct {
 func (m *UpdateItemTypeRequest) Reset()                    { *m = UpdateItemTypeRequest{} }
 func (m *UpdateItemTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateItemTypeRequest) ProtoMessage()               {}
-func (*UpdateItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{32} }
+func (*UpdateItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{33} }
 
 func (m *UpdateItemTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1831,7 +1995,7 @@ type UpdateItemTypeResponse struct {
 func (m *UpdateItemTypeResponse) Reset()                    { *m = UpdateItemTypeResponse{} }
 func (m *UpdateItemTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateItemTypeResponse) ProtoMessage()               {}
-func (*UpdateItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{33} }
+func (*UpdateItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{34} }
 
 func (m *UpdateItemTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1867,7 +2031,7 @@ type DeleteItemTypeRequest struct {
 func (m *DeleteItemTypeRequest) Reset()                    { *m = DeleteItemTypeRequest{} }
 func (m *DeleteItemTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteItemTypeRequest) ProtoMessage()               {}
-func (*DeleteItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{34} }
+func (*DeleteItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{35} }
 
 func (m *DeleteItemTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1903,7 +2067,7 @@ type DeleteItemTypeResponse struct {
 func (m *DeleteItemTypeResponse) Reset()                    { *m = DeleteItemTypeResponse{} }
 func (m *DeleteItemTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteItemTypeResponse) ProtoMessage()               {}
-func (*DeleteItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{35} }
+func (*DeleteItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{36} }
 
 func (m *DeleteItemTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1937,7 +2101,7 @@ type GetItemTypeRequest struct {
 func (m *GetItemTypeRequest) Reset()                    { *m = GetItemTypeRequest{} }
 func (m *GetItemTypeRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetItemTypeRequest) ProtoMessage()               {}
-func (*GetItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{36} }
+func (*GetItemTypeRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{37} }
 
 func (m *GetItemTypeRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -1966,7 +2130,7 @@ type GetItemTypeResponse struct {
 func (m *GetItemTypeResponse) Reset()                    { *m = GetItemTypeResponse{} }
 func (m *GetItemTypeResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetItemTypeResponse) ProtoMessage()               {}
-func (*GetItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{37} }
+func (*GetItemTypeResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{38} }
 
 func (m *GetItemTypeResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -1998,7 +2162,7 @@ type GetItemTypesRequest struct {
 func (m *GetItemTypesRequest) Reset()                    { *m = GetItemTypesRequest{} }
 func (m *GetItemTypesRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetItemTypesRequest) ProtoMessage()               {}
-func (*GetItemTypesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{38} }
+func (*GetItemTypesRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{39} }
 
 func (m *GetItemTypesRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2020,7 +2184,7 @@ type GetItemTypesResponse struct {
 func (m *GetItemTypesResponse) Reset()                    { *m = GetItemTypesResponse{} }
 func (m *GetItemTypesResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetItemTypesResponse) ProtoMessage()               {}
-func (*GetItemTypesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{39} }
+func (*GetItemTypesResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{40} }
 
 func (m *GetItemTypesResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2057,12 +2221,14 @@ type CreateSubareaRequest struct {
 	SubareaTypeId int32 `protobuf:"varint,5,opt,name=subarea_type_id,json=subareaTypeId" json:"subarea_type_id,omitempty"`
 	// subarea name
 	SubareaName string `protobuf:"bytes,6,opt,name=subarea_name,json=subareaName" json:"subarea_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,7,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *CreateSubareaRequest) Reset()                    { *m = CreateSubareaRequest{} }
 func (m *CreateSubareaRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateSubareaRequest) ProtoMessage()               {}
-func (*CreateSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{40} }
+func (*CreateSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{41} }
 
 func (m *CreateSubareaRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2106,6 +2272,13 @@ func (m *CreateSubareaRequest) GetSubareaName() string {
 	return ""
 }
 
+func (m *CreateSubareaRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method create_subarea
 type CreateSubareaResponse struct {
 	// method result code
@@ -2121,7 +2294,7 @@ type CreateSubareaResponse struct {
 func (m *CreateSubareaResponse) Reset()                    { *m = CreateSubareaResponse{} }
 func (m *CreateSubareaResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateSubareaResponse) ProtoMessage()               {}
-func (*CreateSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{41} }
+func (*CreateSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{42} }
 
 func (m *CreateSubareaResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2167,12 +2340,14 @@ type UpdateSubareaRequest struct {
 	SubareaTypeId int32 `protobuf:"varint,6,opt,name=subarea_type_id,json=subareaTypeId" json:"subarea_type_id,omitempty"`
 	// subarea name
 	SubareaName string `protobuf:"bytes,7,opt,name=subarea_name,json=subareaName" json:"subarea_name,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,8,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *UpdateSubareaRequest) Reset()                    { *m = UpdateSubareaRequest{} }
 func (m *UpdateSubareaRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateSubareaRequest) ProtoMessage()               {}
-func (*UpdateSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{42} }
+func (*UpdateSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{43} }
 
 func (m *UpdateSubareaRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2223,6 +2398,13 @@ func (m *UpdateSubareaRequest) GetSubareaName() string {
 	return ""
 }
 
+func (m *UpdateSubareaRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method update_subarea
 type UpdateSubareaResponse struct {
 	// method result code
@@ -2236,7 +2418,7 @@ type UpdateSubareaResponse struct {
 func (m *UpdateSubareaResponse) Reset()                    { *m = UpdateSubareaResponse{} }
 func (m *UpdateSubareaResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateSubareaResponse) ProtoMessage()               {}
-func (*UpdateSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{43} }
+func (*UpdateSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{44} }
 
 func (m *UpdateSubareaResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2272,7 +2454,7 @@ type DeleteSubareaRequest struct {
 func (m *DeleteSubareaRequest) Reset()                    { *m = DeleteSubareaRequest{} }
 func (m *DeleteSubareaRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteSubareaRequest) ProtoMessage()               {}
-func (*DeleteSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{44} }
+func (*DeleteSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{45} }
 
 func (m *DeleteSubareaRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2308,7 +2490,7 @@ type DeleteSubareaResponse struct {
 func (m *DeleteSubareaResponse) Reset()                    { *m = DeleteSubareaResponse{} }
 func (m *DeleteSubareaResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteSubareaResponse) ProtoMessage()               {}
-func (*DeleteSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{45} }
+func (*DeleteSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{46} }
 
 func (m *DeleteSubareaResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2342,7 +2524,7 @@ type GetSubareaRequest struct {
 func (m *GetSubareaRequest) Reset()                    { *m = GetSubareaRequest{} }
 func (m *GetSubareaRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaRequest) ProtoMessage()               {}
-func (*GetSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{46} }
+func (*GetSubareaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{47} }
 
 func (m *GetSubareaRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2371,7 +2553,7 @@ type GetSubareaResponse struct {
 func (m *GetSubareaResponse) Reset()                    { *m = GetSubareaResponse{} }
 func (m *GetSubareaResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareaResponse) ProtoMessage()               {}
-func (*GetSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{47} }
+func (*GetSubareaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{48} }
 
 func (m *GetSubareaResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2405,7 +2587,7 @@ type GetSubareasRequest struct {
 func (m *GetSubareasRequest) Reset()                    { *m = GetSubareasRequest{} }
 func (m *GetSubareasRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareasRequest) ProtoMessage()               {}
-func (*GetSubareasRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{48} }
+func (*GetSubareasRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{49} }
 
 func (m *GetSubareasRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2434,7 +2616,7 @@ type GetSubareasResponse struct {
 func (m *GetSubareasResponse) Reset()                    { *m = GetSubareasResponse{} }
 func (m *GetSubareasResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetSubareasResponse) ProtoMessage()               {}
-func (*GetSubareasResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{49} }
+func (*GetSubareasResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{50} }
 
 func (m *GetSubareasResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2467,12 +2649,14 @@ type CreateProductRequest struct {
 	ProductName string `protobuf:"bytes,3,opt,name=product_name,json=productName" json:"product_name,omitempty"`
 	// entity comment
 	Comment string `protobuf:"bytes,4,opt,name=comment" json:"comment,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,5,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *CreateProductRequest) Reset()                    { *m = CreateProductRequest{} }
 func (m *CreateProductRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateProductRequest) ProtoMessage()               {}
-func (*CreateProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{50} }
+func (*CreateProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{51} }
 
 func (m *CreateProductRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2502,6 +2686,13 @@ func (m *CreateProductRequest) GetComment() string {
 	return ""
 }
 
+func (m *CreateProductRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method create_product
 type CreateProductResponse struct {
 	// method result code
@@ -2517,7 +2708,7 @@ type CreateProductResponse struct {
 func (m *CreateProductResponse) Reset()                    { *m = CreateProductResponse{} }
 func (m *CreateProductResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateProductResponse) ProtoMessage()               {}
-func (*CreateProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{51} }
+func (*CreateProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{52} }
 
 func (m *CreateProductResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2561,12 +2752,14 @@ type UpdateProductRequest struct {
 	ProductName string `protobuf:"bytes,5,opt,name=product_name,json=productName" json:"product_name,omitempty"`
 	// entity comment
 	Comment string `protobuf:"bytes,6,opt,name=comment" json:"comment,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,7,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *UpdateProductRequest) Reset()                    { *m = UpdateProductRequest{} }
 func (m *UpdateProductRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateProductRequest) ProtoMessage()               {}
-func (*UpdateProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{52} }
+func (*UpdateProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{53} }
 
 func (m *UpdateProductRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2610,6 +2803,13 @@ func (m *UpdateProductRequest) GetComment() string {
 	return ""
 }
 
+func (m *UpdateProductRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method update_product
 type UpdateProductResponse struct {
 	// method result code
@@ -2623,7 +2823,7 @@ type UpdateProductResponse struct {
 func (m *UpdateProductResponse) Reset()                    { *m = UpdateProductResponse{} }
 func (m *UpdateProductResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateProductResponse) ProtoMessage()               {}
-func (*UpdateProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{53} }
+func (*UpdateProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{54} }
 
 func (m *UpdateProductResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2659,7 +2859,7 @@ type DeleteProductRequest struct {
 func (m *DeleteProductRequest) Reset()                    { *m = DeleteProductRequest{} }
 func (m *DeleteProductRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteProductRequest) ProtoMessage()               {}
-func (*DeleteProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{54} }
+func (*DeleteProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{55} }
 
 func (m *DeleteProductRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2695,7 +2895,7 @@ type DeleteProductResponse struct {
 func (m *DeleteProductResponse) Reset()                    { *m = DeleteProductResponse{} }
 func (m *DeleteProductResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteProductResponse) ProtoMessage()               {}
-func (*DeleteProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{55} }
+func (*DeleteProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{56} }
 
 func (m *DeleteProductResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2729,7 +2929,7 @@ type GetProductRequest struct {
 func (m *GetProductRequest) Reset()                    { *m = GetProductRequest{} }
 func (m *GetProductRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetProductRequest) ProtoMessage()               {}
-func (*GetProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{56} }
+func (*GetProductRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{57} }
 
 func (m *GetProductRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2758,7 +2958,7 @@ type GetProductResponse struct {
 func (m *GetProductResponse) Reset()                    { *m = GetProductResponse{} }
 func (m *GetProductResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetProductResponse) ProtoMessage()               {}
-func (*GetProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{57} }
+func (*GetProductResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{58} }
 
 func (m *GetProductResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2790,7 +2990,7 @@ type GetProductsRequest struct {
 func (m *GetProductsRequest) Reset()                    { *m = GetProductsRequest{} }
 func (m *GetProductsRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetProductsRequest) ProtoMessage()               {}
-func (*GetProductsRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{58} }
+func (*GetProductsRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{59} }
 
 func (m *GetProductsRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2812,7 +3012,7 @@ type GetProductsResponse struct {
 func (m *GetProductsResponse) Reset()                    { *m = GetProductsResponse{} }
 func (m *GetProductsResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetProductsResponse) ProtoMessage()               {}
-func (*GetProductsResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{59} }
+func (*GetProductsResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{60} }
 
 func (m *GetProductsResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2849,12 +3049,14 @@ type CreateInventoryItemRequest struct {
 	SerialNumber string `protobuf:"bytes,5,opt,name=serial_number,json=serialNumber" json:"serial_number,omitempty"`
 	// inventory product identifier
 	ProductId int64 `protobuf:"varint,6,opt,name=product_id,json=productId" json:"product_id,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,7,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *CreateInventoryItemRequest) Reset()                    { *m = CreateInventoryItemRequest{} }
 func (m *CreateInventoryItemRequest) String() string            { return proto.CompactTextString(m) }
 func (*CreateInventoryItemRequest) ProtoMessage()               {}
-func (*CreateInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{60} }
+func (*CreateInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{61} }
 
 func (m *CreateInventoryItemRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -2898,6 +3100,13 @@ func (m *CreateInventoryItemRequest) GetProductId() int64 {
 	return 0
 }
 
+func (m *CreateInventoryItemRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method create_inventory_item
 type CreateInventoryItemResponse struct {
 	// method result code
@@ -2913,7 +3122,7 @@ type CreateInventoryItemResponse struct {
 func (m *CreateInventoryItemResponse) Reset()                    { *m = CreateInventoryItemResponse{} }
 func (m *CreateInventoryItemResponse) String() string            { return proto.CompactTextString(m) }
 func (*CreateInventoryItemResponse) ProtoMessage()               {}
-func (*CreateInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{61} }
+func (*CreateInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{62} }
 
 func (m *CreateInventoryItemResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -2961,12 +3170,14 @@ type UpdateInventoryItemRequest struct {
 	SerialNumber string `protobuf:"bytes,7,opt,name=serial_number,json=serialNumber" json:"serial_number,omitempty"`
 	// inventory product identifier
 	ProductId int64 `protobuf:"varint,8,opt,name=product_id,json=productId" json:"product_id,omitempty"`
+	// data for entity ui extensions
+	JsonData string `protobuf:"bytes,9,opt,name=json_data,json=jsonData" json:"json_data,omitempty"`
 }
 
 func (m *UpdateInventoryItemRequest) Reset()                    { *m = UpdateInventoryItemRequest{} }
 func (m *UpdateInventoryItemRequest) String() string            { return proto.CompactTextString(m) }
 func (*UpdateInventoryItemRequest) ProtoMessage()               {}
-func (*UpdateInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{62} }
+func (*UpdateInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{63} }
 
 func (m *UpdateInventoryItemRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -3024,6 +3235,13 @@ func (m *UpdateInventoryItemRequest) GetProductId() int64 {
 	return 0
 }
 
+func (m *UpdateInventoryItemRequest) GetJsonData() string {
+	if m != nil {
+		return m.JsonData
+	}
+	return ""
+}
+
 // response parameters for method update_inventory_item
 type UpdateInventoryItemResponse struct {
 	// method result code
@@ -3037,7 +3255,7 @@ type UpdateInventoryItemResponse struct {
 func (m *UpdateInventoryItemResponse) Reset()                    { *m = UpdateInventoryItemResponse{} }
 func (m *UpdateInventoryItemResponse) String() string            { return proto.CompactTextString(m) }
 func (*UpdateInventoryItemResponse) ProtoMessage()               {}
-func (*UpdateInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{63} }
+func (*UpdateInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{64} }
 
 func (m *UpdateInventoryItemResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -3073,7 +3291,7 @@ type DeleteInventoryItemRequest struct {
 func (m *DeleteInventoryItemRequest) Reset()                    { *m = DeleteInventoryItemRequest{} }
 func (m *DeleteInventoryItemRequest) String() string            { return proto.CompactTextString(m) }
 func (*DeleteInventoryItemRequest) ProtoMessage()               {}
-func (*DeleteInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{64} }
+func (*DeleteInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{65} }
 
 func (m *DeleteInventoryItemRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -3109,7 +3327,7 @@ type DeleteInventoryItemResponse struct {
 func (m *DeleteInventoryItemResponse) Reset()                    { *m = DeleteInventoryItemResponse{} }
 func (m *DeleteInventoryItemResponse) String() string            { return proto.CompactTextString(m) }
 func (*DeleteInventoryItemResponse) ProtoMessage()               {}
-func (*DeleteInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{65} }
+func (*DeleteInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{66} }
 
 func (m *DeleteInventoryItemResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -3143,7 +3361,7 @@ type GetInventoryItemRequest struct {
 func (m *GetInventoryItemRequest) Reset()                    { *m = GetInventoryItemRequest{} }
 func (m *GetInventoryItemRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetInventoryItemRequest) ProtoMessage()               {}
-func (*GetInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{66} }
+func (*GetInventoryItemRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{67} }
 
 func (m *GetInventoryItemRequest) GetMserviceId() int64 {
 	if m != nil {
@@ -3172,7 +3390,7 @@ type GetInventoryItemResponse struct {
 func (m *GetInventoryItemResponse) Reset()                    { *m = GetInventoryItemResponse{} }
 func (m *GetInventoryItemResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetInventoryItemResponse) ProtoMessage()               {}
-func (*GetInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{67} }
+func (*GetInventoryItemResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{68} }
 
 func (m *GetInventoryItemResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -3207,7 +3425,7 @@ func (m *GetInventoryItemsByProductRequest) Reset()         { *m = GetInventoryI
 func (m *GetInventoryItemsByProductRequest) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsByProductRequest) ProtoMessage()    {}
 func (*GetInventoryItemsByProductRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{68}
+	return fileDescriptor0, []int{69}
 }
 
 func (m *GetInventoryItemsByProductRequest) GetMserviceId() int64 {
@@ -3238,7 +3456,7 @@ func (m *GetInventoryItemsByProductResponse) Reset()         { *m = GetInventory
 func (m *GetInventoryItemsByProductResponse) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsByProductResponse) ProtoMessage()    {}
 func (*GetInventoryItemsByProductResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{69}
+	return fileDescriptor0, []int{70}
 }
 
 func (m *GetInventoryItemsByProductResponse) GetErrorCode() int32 {
@@ -3274,7 +3492,7 @@ func (m *GetInventoryItemsBySubareaRequest) Reset()         { *m = GetInventoryI
 func (m *GetInventoryItemsBySubareaRequest) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsBySubareaRequest) ProtoMessage()    {}
 func (*GetInventoryItemsBySubareaRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{70}
+	return fileDescriptor0, []int{71}
 }
 
 func (m *GetInventoryItemsBySubareaRequest) GetMserviceId() int64 {
@@ -3305,7 +3523,7 @@ func (m *GetInventoryItemsBySubareaResponse) Reset()         { *m = GetInventory
 func (m *GetInventoryItemsBySubareaResponse) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsBySubareaResponse) ProtoMessage()    {}
 func (*GetInventoryItemsBySubareaResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{71}
+	return fileDescriptor0, []int{72}
 }
 
 func (m *GetInventoryItemsBySubareaResponse) GetErrorCode() int32 {
@@ -3341,7 +3559,7 @@ func (m *GetInventoryItemsByFacilityRequest) Reset()         { *m = GetInventory
 func (m *GetInventoryItemsByFacilityRequest) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsByFacilityRequest) ProtoMessage()    {}
 func (*GetInventoryItemsByFacilityRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{72}
+	return fileDescriptor0, []int{73}
 }
 
 func (m *GetInventoryItemsByFacilityRequest) GetMserviceId() int64 {
@@ -3372,7 +3590,7 @@ func (m *GetInventoryItemsByFacilityResponse) Reset()         { *m = GetInventor
 func (m *GetInventoryItemsByFacilityResponse) String() string { return proto.CompactTextString(m) }
 func (*GetInventoryItemsByFacilityResponse) ProtoMessage()    {}
 func (*GetInventoryItemsByFacilityResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor0, []int{73}
+	return fileDescriptor0, []int{74}
 }
 
 func (m *GetInventoryItemsByFacilityResponse) GetErrorCode() int32 {
@@ -3405,7 +3623,7 @@ type GetServerVersionRequest struct {
 func (m *GetServerVersionRequest) Reset()                    { *m = GetServerVersionRequest{} }
 func (m *GetServerVersionRequest) String() string            { return proto.CompactTextString(m) }
 func (*GetServerVersionRequest) ProtoMessage()               {}
-func (*GetServerVersionRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{74} }
+func (*GetServerVersionRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{75} }
 
 func (m *GetServerVersionRequest) GetDummyParam() int32 {
 	if m != nil {
@@ -3429,7 +3647,7 @@ type GetServerVersionResponse struct {
 func (m *GetServerVersionResponse) Reset()                    { *m = GetServerVersionResponse{} }
 func (m *GetServerVersionResponse) String() string            { return proto.CompactTextString(m) }
 func (*GetServerVersionResponse) ProtoMessage()               {}
-func (*GetServerVersionResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{75} }
+func (*GetServerVersionResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{76} }
 
 func (m *GetServerVersionResponse) GetErrorCode() int32 {
 	if m != nil {
@@ -3459,6 +3677,348 @@ func (m *GetServerVersionResponse) GetServerUptime() int64 {
 	return 0
 }
 
+// request parameters for method create_entity_schema
+type CreateEntitySchemaRequest struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+	// name of entity to be extended
+	EntityName string `protobuf:"bytes,2,opt,name=entity_name,json=entityName" json:"entity_name,omitempty"`
+	// schema for json_data extensions
+	JsonSchema string `protobuf:"bytes,3,opt,name=json_schema,json=jsonSchema" json:"json_schema,omitempty"`
+}
+
+func (m *CreateEntitySchemaRequest) Reset()                    { *m = CreateEntitySchemaRequest{} }
+func (m *CreateEntitySchemaRequest) String() string            { return proto.CompactTextString(m) }
+func (*CreateEntitySchemaRequest) ProtoMessage()               {}
+func (*CreateEntitySchemaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{77} }
+
+func (m *CreateEntitySchemaRequest) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+func (m *CreateEntitySchemaRequest) GetEntityName() string {
+	if m != nil {
+		return m.EntityName
+	}
+	return ""
+}
+
+func (m *CreateEntitySchemaRequest) GetJsonSchema() string {
+	if m != nil {
+		return m.JsonSchema
+	}
+	return ""
+}
+
+// response parameters for method create_entity_schema
+type CreateEntitySchemaResponse struct {
+	// method result code
+	ErrorCode int32 `protobuf:"varint,1,opt,name=error_code,json=errorCode" json:"error_code,omitempty"`
+	// text error message
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+}
+
+func (m *CreateEntitySchemaResponse) Reset()                    { *m = CreateEntitySchemaResponse{} }
+func (m *CreateEntitySchemaResponse) String() string            { return proto.CompactTextString(m) }
+func (*CreateEntitySchemaResponse) ProtoMessage()               {}
+func (*CreateEntitySchemaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{78} }
+
+func (m *CreateEntitySchemaResponse) GetErrorCode() int32 {
+	if m != nil {
+		return m.ErrorCode
+	}
+	return 0
+}
+
+func (m *CreateEntitySchemaResponse) GetErrorMessage() string {
+	if m != nil {
+		return m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *CreateEntitySchemaResponse) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+// request parameters for method update_entity_schema
+type UpdateEntitySchemaRequest struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+	// name of entity to be extended
+	EntityName string `protobuf:"bytes,2,opt,name=entity_name,json=entityName" json:"entity_name,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+	// schema for json_data extensions
+	JsonSchema string `protobuf:"bytes,4,opt,name=json_schema,json=jsonSchema" json:"json_schema,omitempty"`
+}
+
+func (m *UpdateEntitySchemaRequest) Reset()                    { *m = UpdateEntitySchemaRequest{} }
+func (m *UpdateEntitySchemaRequest) String() string            { return proto.CompactTextString(m) }
+func (*UpdateEntitySchemaRequest) ProtoMessage()               {}
+func (*UpdateEntitySchemaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{79} }
+
+func (m *UpdateEntitySchemaRequest) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+func (m *UpdateEntitySchemaRequest) GetEntityName() string {
+	if m != nil {
+		return m.EntityName
+	}
+	return ""
+}
+
+func (m *UpdateEntitySchemaRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+func (m *UpdateEntitySchemaRequest) GetJsonSchema() string {
+	if m != nil {
+		return m.JsonSchema
+	}
+	return ""
+}
+
+// response parameters for method update_entity_schema
+type UpdateEntitySchemaResponse struct {
+	// method result code
+	ErrorCode int32 `protobuf:"varint,1,opt,name=error_code,json=errorCode" json:"error_code,omitempty"`
+	// text error message
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+}
+
+func (m *UpdateEntitySchemaResponse) Reset()                    { *m = UpdateEntitySchemaResponse{} }
+func (m *UpdateEntitySchemaResponse) String() string            { return proto.CompactTextString(m) }
+func (*UpdateEntitySchemaResponse) ProtoMessage()               {}
+func (*UpdateEntitySchemaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{80} }
+
+func (m *UpdateEntitySchemaResponse) GetErrorCode() int32 {
+	if m != nil {
+		return m.ErrorCode
+	}
+	return 0
+}
+
+func (m *UpdateEntitySchemaResponse) GetErrorMessage() string {
+	if m != nil {
+		return m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *UpdateEntitySchemaResponse) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+// request parameters for method delete_entity_schema
+type DeleteEntitySchemaRequest struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+	// name of entity to be extended
+	EntityName string `protobuf:"bytes,2,opt,name=entity_name,json=entityName" json:"entity_name,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+}
+
+func (m *DeleteEntitySchemaRequest) Reset()                    { *m = DeleteEntitySchemaRequest{} }
+func (m *DeleteEntitySchemaRequest) String() string            { return proto.CompactTextString(m) }
+func (*DeleteEntitySchemaRequest) ProtoMessage()               {}
+func (*DeleteEntitySchemaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{81} }
+
+func (m *DeleteEntitySchemaRequest) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+func (m *DeleteEntitySchemaRequest) GetEntityName() string {
+	if m != nil {
+		return m.EntityName
+	}
+	return ""
+}
+
+func (m *DeleteEntitySchemaRequest) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+// response parameters for method delete_entity_schema
+type DeleteEntitySchemaResponse struct {
+	// method result code
+	ErrorCode int32 `protobuf:"varint,1,opt,name=error_code,json=errorCode" json:"error_code,omitempty"`
+	// text error message
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	// version of this record
+	Version int32 `protobuf:"varint,3,opt,name=version" json:"version,omitempty"`
+}
+
+func (m *DeleteEntitySchemaResponse) Reset()                    { *m = DeleteEntitySchemaResponse{} }
+func (m *DeleteEntitySchemaResponse) String() string            { return proto.CompactTextString(m) }
+func (*DeleteEntitySchemaResponse) ProtoMessage()               {}
+func (*DeleteEntitySchemaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{82} }
+
+func (m *DeleteEntitySchemaResponse) GetErrorCode() int32 {
+	if m != nil {
+		return m.ErrorCode
+	}
+	return 0
+}
+
+func (m *DeleteEntitySchemaResponse) GetErrorMessage() string {
+	if m != nil {
+		return m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *DeleteEntitySchemaResponse) GetVersion() int32 {
+	if m != nil {
+		return m.Version
+	}
+	return 0
+}
+
+// request parameters for method get_entity_schema
+type GetEntitySchemaRequest struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+	// name of entity to be extended
+	EntityName string `protobuf:"bytes,2,opt,name=entity_name,json=entityName" json:"entity_name,omitempty"`
+}
+
+func (m *GetEntitySchemaRequest) Reset()                    { *m = GetEntitySchemaRequest{} }
+func (m *GetEntitySchemaRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetEntitySchemaRequest) ProtoMessage()               {}
+func (*GetEntitySchemaRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{83} }
+
+func (m *GetEntitySchemaRequest) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+func (m *GetEntitySchemaRequest) GetEntityName() string {
+	if m != nil {
+		return m.EntityName
+	}
+	return ""
+}
+
+// response parameters for method get_entity_schema
+type GetEntitySchemaResponse struct {
+	// method result code
+	ErrorCode int32 `protobuf:"varint,1,opt,name=error_code,json=errorCode" json:"error_code,omitempty"`
+	// text error message
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	// single entity schema object
+	EntitySchema *EntitySchema `protobuf:"bytes,3,opt,name=entity_schema,json=entitySchema" json:"entity_schema,omitempty"`
+}
+
+func (m *GetEntitySchemaResponse) Reset()                    { *m = GetEntitySchemaResponse{} }
+func (m *GetEntitySchemaResponse) String() string            { return proto.CompactTextString(m) }
+func (*GetEntitySchemaResponse) ProtoMessage()               {}
+func (*GetEntitySchemaResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{84} }
+
+func (m *GetEntitySchemaResponse) GetErrorCode() int32 {
+	if m != nil {
+		return m.ErrorCode
+	}
+	return 0
+}
+
+func (m *GetEntitySchemaResponse) GetErrorMessage() string {
+	if m != nil {
+		return m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *GetEntitySchemaResponse) GetEntitySchema() *EntitySchema {
+	if m != nil {
+		return m.EntitySchema
+	}
+	return nil
+}
+
+// request parameters for method get_entity_schemas
+type GetEntitySchemasRequest struct {
+	// mservice account identifier
+	MserviceId int64 `protobuf:"varint,1,opt,name=mservice_id,json=mserviceId" json:"mservice_id,omitempty"`
+}
+
+func (m *GetEntitySchemasRequest) Reset()                    { *m = GetEntitySchemasRequest{} }
+func (m *GetEntitySchemasRequest) String() string            { return proto.CompactTextString(m) }
+func (*GetEntitySchemasRequest) ProtoMessage()               {}
+func (*GetEntitySchemasRequest) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{85} }
+
+func (m *GetEntitySchemasRequest) GetMserviceId() int64 {
+	if m != nil {
+		return m.MserviceId
+	}
+	return 0
+}
+
+// response parameters for method get_entity_schemas
+type GetEntitySchemasResponse struct {
+	// method result code
+	ErrorCode int32 `protobuf:"varint,1,opt,name=error_code,json=errorCode" json:"error_code,omitempty"`
+	// text error message
+	ErrorMessage string `protobuf:"bytes,2,opt,name=error_message,json=errorMessage" json:"error_message,omitempty"`
+	// list of  entity schema objects
+	EntitySchemas []*EntitySchema `protobuf:"bytes,3,rep,name=entity_schemas,json=entitySchemas" json:"entity_schemas,omitempty"`
+}
+
+func (m *GetEntitySchemasResponse) Reset()                    { *m = GetEntitySchemasResponse{} }
+func (m *GetEntitySchemasResponse) String() string            { return proto.CompactTextString(m) }
+func (*GetEntitySchemasResponse) ProtoMessage()               {}
+func (*GetEntitySchemasResponse) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{86} }
+
+func (m *GetEntitySchemasResponse) GetErrorCode() int32 {
+	if m != nil {
+		return m.ErrorCode
+	}
+	return 0
+}
+
+func (m *GetEntitySchemasResponse) GetErrorMessage() string {
+	if m != nil {
+		return m.ErrorMessage
+	}
+	return ""
+}
+
+func (m *GetEntitySchemasResponse) GetEntitySchemas() []*EntitySchema {
+	if m != nil {
+		return m.EntitySchemas
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Facility)(nil), "org.gaterace.mservice.project.Facility")
 	proto.RegisterType((*FacilityWrapper)(nil), "org.gaterace.mservice.project.FacilityWrapper")
@@ -3468,6 +4028,7 @@ func init() {
 	proto.RegisterType((*SubareaWrapper)(nil), "org.gaterace.mservice.project.SubareaWrapper")
 	proto.RegisterType((*Product)(nil), "org.gaterace.mservice.project.Product")
 	proto.RegisterType((*InventoryItem)(nil), "org.gaterace.mservice.project.InventoryItem")
+	proto.RegisterType((*EntitySchema)(nil), "org.gaterace.mservice.project.EntitySchema")
 	proto.RegisterType((*CreateFacilityRequest)(nil), "org.gaterace.mservice.project.CreateFacilityRequest")
 	proto.RegisterType((*CreateFacilityResponse)(nil), "org.gaterace.mservice.project.CreateFacilityResponse")
 	proto.RegisterType((*UpdateFacilityRequest)(nil), "org.gaterace.mservice.project.UpdateFacilityRequest")
@@ -3536,6 +4097,16 @@ func init() {
 	proto.RegisterType((*GetInventoryItemsByFacilityResponse)(nil), "org.gaterace.mservice.project.GetInventoryItemsByFacilityResponse")
 	proto.RegisterType((*GetServerVersionRequest)(nil), "org.gaterace.mservice.project.GetServerVersionRequest")
 	proto.RegisterType((*GetServerVersionResponse)(nil), "org.gaterace.mservice.project.GetServerVersionResponse")
+	proto.RegisterType((*CreateEntitySchemaRequest)(nil), "org.gaterace.mservice.project.CreateEntitySchemaRequest")
+	proto.RegisterType((*CreateEntitySchemaResponse)(nil), "org.gaterace.mservice.project.CreateEntitySchemaResponse")
+	proto.RegisterType((*UpdateEntitySchemaRequest)(nil), "org.gaterace.mservice.project.UpdateEntitySchemaRequest")
+	proto.RegisterType((*UpdateEntitySchemaResponse)(nil), "org.gaterace.mservice.project.UpdateEntitySchemaResponse")
+	proto.RegisterType((*DeleteEntitySchemaRequest)(nil), "org.gaterace.mservice.project.DeleteEntitySchemaRequest")
+	proto.RegisterType((*DeleteEntitySchemaResponse)(nil), "org.gaterace.mservice.project.DeleteEntitySchemaResponse")
+	proto.RegisterType((*GetEntitySchemaRequest)(nil), "org.gaterace.mservice.project.GetEntitySchemaRequest")
+	proto.RegisterType((*GetEntitySchemaResponse)(nil), "org.gaterace.mservice.project.GetEntitySchemaResponse")
+	proto.RegisterType((*GetEntitySchemasRequest)(nil), "org.gaterace.mservice.project.GetEntitySchemasRequest")
+	proto.RegisterType((*GetEntitySchemasResponse)(nil), "org.gaterace.mservice.project.GetEntitySchemasResponse")
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -3617,6 +4188,16 @@ type MServiceInventoryClient interface {
 	GetInventoryItemsByFacility(ctx context.Context, in *GetInventoryItemsByFacilityRequest, opts ...grpc.CallOption) (*GetInventoryItemsByFacilityResponse, error)
 	// get current server version and uptime - health check
 	GetServerVersion(ctx context.Context, in *GetServerVersionRequest, opts ...grpc.CallOption) (*GetServerVersionResponse, error)
+	// create an entity schema
+	CreateEntitySchema(ctx context.Context, in *CreateEntitySchemaRequest, opts ...grpc.CallOption) (*CreateEntitySchemaResponse, error)
+	// update an entity schema
+	UpdateEntitySchema(ctx context.Context, in *UpdateEntitySchemaRequest, opts ...grpc.CallOption) (*UpdateEntitySchemaResponse, error)
+	// delete an entity schema
+	DeleteEntitySchema(ctx context.Context, in *DeleteEntitySchemaRequest, opts ...grpc.CallOption) (*DeleteEntitySchemaResponse, error)
+	// get an entity schema by name
+	GetEntitySchema(ctx context.Context, in *GetEntitySchemaRequest, opts ...grpc.CallOption) (*GetEntitySchemaResponse, error)
+	// get all entity schemas for account
+	GetEntitySchemas(ctx context.Context, in *GetEntitySchemasRequest, opts ...grpc.CallOption) (*GetEntitySchemasResponse, error)
 }
 
 type mServiceInventoryClient struct {
@@ -3933,6 +4514,51 @@ func (c *mServiceInventoryClient) GetServerVersion(ctx context.Context, in *GetS
 	return out, nil
 }
 
+func (c *mServiceInventoryClient) CreateEntitySchema(ctx context.Context, in *CreateEntitySchemaRequest, opts ...grpc.CallOption) (*CreateEntitySchemaResponse, error) {
+	out := new(CreateEntitySchemaResponse)
+	err := grpc.Invoke(ctx, "/org.gaterace.mservice.project.MServiceInventory/create_entity_schema", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mServiceInventoryClient) UpdateEntitySchema(ctx context.Context, in *UpdateEntitySchemaRequest, opts ...grpc.CallOption) (*UpdateEntitySchemaResponse, error) {
+	out := new(UpdateEntitySchemaResponse)
+	err := grpc.Invoke(ctx, "/org.gaterace.mservice.project.MServiceInventory/update_entity_schema", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mServiceInventoryClient) DeleteEntitySchema(ctx context.Context, in *DeleteEntitySchemaRequest, opts ...grpc.CallOption) (*DeleteEntitySchemaResponse, error) {
+	out := new(DeleteEntitySchemaResponse)
+	err := grpc.Invoke(ctx, "/org.gaterace.mservice.project.MServiceInventory/delete_entity_schema", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mServiceInventoryClient) GetEntitySchema(ctx context.Context, in *GetEntitySchemaRequest, opts ...grpc.CallOption) (*GetEntitySchemaResponse, error) {
+	out := new(GetEntitySchemaResponse)
+	err := grpc.Invoke(ctx, "/org.gaterace.mservice.project.MServiceInventory/get_entity_schema", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *mServiceInventoryClient) GetEntitySchemas(ctx context.Context, in *GetEntitySchemasRequest, opts ...grpc.CallOption) (*GetEntitySchemasResponse, error) {
+	out := new(GetEntitySchemasResponse)
+	err := grpc.Invoke(ctx, "/org.gaterace.mservice.project.MServiceInventory/get_entity_schemas", in, out, c.cc, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for MServiceInventory service
 
 type MServiceInventoryServer interface {
@@ -4004,6 +4630,16 @@ type MServiceInventoryServer interface {
 	GetInventoryItemsByFacility(context.Context, *GetInventoryItemsByFacilityRequest) (*GetInventoryItemsByFacilityResponse, error)
 	// get current server version and uptime - health check
 	GetServerVersion(context.Context, *GetServerVersionRequest) (*GetServerVersionResponse, error)
+	// create an entity schema
+	CreateEntitySchema(context.Context, *CreateEntitySchemaRequest) (*CreateEntitySchemaResponse, error)
+	// update an entity schema
+	UpdateEntitySchema(context.Context, *UpdateEntitySchemaRequest) (*UpdateEntitySchemaResponse, error)
+	// delete an entity schema
+	DeleteEntitySchema(context.Context, *DeleteEntitySchemaRequest) (*DeleteEntitySchemaResponse, error)
+	// get an entity schema by name
+	GetEntitySchema(context.Context, *GetEntitySchemaRequest) (*GetEntitySchemaResponse, error)
+	// get all entity schemas for account
+	GetEntitySchemas(context.Context, *GetEntitySchemasRequest) (*GetEntitySchemasResponse, error)
 }
 
 func RegisterMServiceInventoryServer(s *grpc.Server, srv MServiceInventoryServer) {
@@ -4622,6 +5258,96 @@ func _MServiceInventory_GetServerVersion_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MServiceInventory_CreateEntitySchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateEntitySchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MServiceInventoryServer).CreateEntitySchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/org.gaterace.mservice.project.MServiceInventory/CreateEntitySchema",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MServiceInventoryServer).CreateEntitySchema(ctx, req.(*CreateEntitySchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MServiceInventory_UpdateEntitySchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateEntitySchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MServiceInventoryServer).UpdateEntitySchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/org.gaterace.mservice.project.MServiceInventory/UpdateEntitySchema",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MServiceInventoryServer).UpdateEntitySchema(ctx, req.(*UpdateEntitySchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MServiceInventory_DeleteEntitySchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteEntitySchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MServiceInventoryServer).DeleteEntitySchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/org.gaterace.mservice.project.MServiceInventory/DeleteEntitySchema",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MServiceInventoryServer).DeleteEntitySchema(ctx, req.(*DeleteEntitySchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MServiceInventory_GetEntitySchema_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEntitySchemaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MServiceInventoryServer).GetEntitySchema(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/org.gaterace.mservice.project.MServiceInventory/GetEntitySchema",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MServiceInventoryServer).GetEntitySchema(ctx, req.(*GetEntitySchemaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MServiceInventory_GetEntitySchemas_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetEntitySchemasRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MServiceInventoryServer).GetEntitySchemas(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/org.gaterace.mservice.project.MServiceInventory/GetEntitySchemas",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MServiceInventoryServer).GetEntitySchemas(ctx, req.(*GetEntitySchemasRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _MServiceInventory_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "org.gaterace.mservice.project.MServiceInventory",
 	HandlerType: (*MServiceInventoryServer)(nil),
@@ -4762,6 +5488,26 @@ var _MServiceInventory_serviceDesc = grpc.ServiceDesc{
 			MethodName: "get_server_version",
 			Handler:    _MServiceInventory_GetServerVersion_Handler,
 		},
+		{
+			MethodName: "create_entity_schema",
+			Handler:    _MServiceInventory_CreateEntitySchema_Handler,
+		},
+		{
+			MethodName: "update_entity_schema",
+			Handler:    _MServiceInventory_UpdateEntitySchema_Handler,
+		},
+		{
+			MethodName: "delete_entity_schema",
+			Handler:    _MServiceInventory_DeleteEntitySchema_Handler,
+		},
+		{
+			MethodName: "get_entity_schema",
+			Handler:    _MServiceInventory_GetEntitySchema_Handler,
+		},
+		{
+			MethodName: "get_entity_schemas",
+			Handler:    _MServiceInventory_GetEntitySchemas_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "MServiceInventory.proto",
@@ -4770,150 +5516,169 @@ var _MServiceInventory_serviceDesc = grpc.ServiceDesc{
 func init() { proto.RegisterFile("MServiceInventory.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 2312 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5c, 0x5f, 0xaf, 0xdc, 0x46,
-	0x15, 0xd7, 0xec, 0x7a, 0xff, 0x9d, 0xbd, 0xbb, 0x9b, 0xeb, 0xde, 0x9b, 0x6e, 0x5d, 0x95, 0xde,
-	0x3a, 0xd0, 0x5c, 0x22, 0x58, 0x91, 0x9b, 0x9b, 0xa6, 0xe9, 0x53, 0x9a, 0x84, 0x56, 0x79, 0x48,
-	0xa9, 0xf6, 0x26, 0xad, 0x40, 0xaa, 0x16, 0x67, 0x77, 0x6e, 0x30, 0x5c, 0xef, 0x6e, 0x6d, 0xef,
-	0xc2, 0xaa, 0x22, 0x45, 0x14, 0x10, 0x12, 0x12, 0xbc, 0x20, 0x81, 0x90, 0x00, 0x09, 0x15, 0x95,
-	0x16, 0x89, 0x17, 0x78, 0x40, 0xe2, 0xa1, 0x7c, 0x02, 0x3e, 0x02, 0x12, 0xcf, 0x7c, 0x05, 0x1e,
-	0x90, 0xed, 0x19, 0xdb, 0x33, 0x1e, 0xaf, 0xc7, 0x37, 0x5e, 0x17, 0xd2, 0xbc, 0xdd, 0x1d, 0x7b,
-	0xce, 0xf9, 0x9d, 0xdf, 0x39, 0x73, 0x66, 0xe6, 0x1c, 0x27, 0xf0, 0xe4, 0xed, 0x23, 0x6c, 0x2f,
-	0xcd, 0x31, 0xbe, 0x35, 0x5d, 0xe2, 0xa9, 0x3b, 0xb3, 0x57, 0x83, 0xb9, 0x3d, 0x73, 0x67, 0xea,
-	0x33, 0x33, 0xfb, 0xfe, 0xe0, 0xbe, 0xe1, 0x62, 0xdb, 0x18, 0xe3, 0x81, 0xe5, 0x04, 0x6f, 0x79,
-	0x0f, 0xbf, 0x89, 0xc7, 0xae, 0xa6, 0xde, 0xb4, 0x4e, 0xbe, 0xfc, 0x1d, 0x17, 0x4f, 0x1d, 0x73,
-	0x36, 0x0d, 0xa6, 0xe8, 0x1f, 0x54, 0xa0, 0xf9, 0x8a, 0x31, 0x36, 0x4f, 0x4c, 0x77, 0xa5, 0x3e,
-	0x0b, 0xed, 0x63, 0xf2, 0xf7, 0xc8, 0x9c, 0xf4, 0xd1, 0x1e, 0xda, 0xaf, 0x0e, 0x81, 0x0e, 0xdd,
-	0x9a, 0xa8, 0xe7, 0xa1, 0x31, 0xb6, 0xb1, 0xe1, 0xe2, 0x49, 0xbf, 0xb2, 0x87, 0xf6, 0xdb, 0x07,
-	0x9d, 0xc1, 0xc4, 0x3a, 0x19, 0xdc, 0x34, 0x5c, 0x7c, 0xc7, 0xb4, 0xf0, 0x90, 0x3e, 0x55, 0x3f,
-	0x0f, 0x4d, 0x6b, 0x36, 0x31, 0x8f, 0x4d, 0x3c, 0xe9, 0x57, 0x45, 0x6f, 0x86, 0x8f, 0x3d, 0x99,
-	0x13, 0x7c, 0x82, 0x3d, 0x99, 0x8a, 0x50, 0x26, 0x79, 0xaa, 0x3e, 0x03, 0x60, 0x3a, 0x23, 0xfa,
-	0x6e, 0x6d, 0x0f, 0xed, 0x37, 0x87, 0x2d, 0xd3, 0xb9, 0x49, 0x1e, 0xf7, 0xa1, 0xb1, 0xc4, 0xb6,
-	0x67, 0x5a, 0xbf, 0xbe, 0x87, 0xf6, 0x6b, 0x43, 0xfa, 0xd3, 0x33, 0x8b, 0x72, 0xe1, 0x99, 0xd5,
-	0x08, 0xcc, 0xa2, 0x43, 0xb7, 0x26, 0xea, 0x39, 0xe8, 0x84, 0x76, 0x4f, 0x0d, 0x0b, 0xf7, 0x9b,
-	0x7b, 0x68, 0xbf, 0x35, 0xdc, 0xa2, 0x83, 0xaf, 0x19, 0x16, 0xd6, 0x7f, 0x50, 0x85, 0x1e, 0x65,
-	0xea, 0x4d, 0xdb, 0x98, 0xcf, 0xb1, 0xfd, 0x98, 0xb0, 0x35, 0x84, 0xa9, 0x77, 0xa0, 0x3b, 0xfe,
-	0x86, 0x79, 0x32, 0x19, 0x39, 0x8b, 0x7b, 0x86, 0x8d, 0x0d, 0xa7, 0xdf, 0xda, 0xab, 0xee, 0xb7,
-	0x0f, 0xbe, 0x38, 0x58, 0x1b, 0xa6, 0x83, 0xa3, 0xe0, 0x75, 0xc2, 0xf1, 0xb0, 0xe3, 0x0b, 0x21,
-	0x83, 0x8e, 0xfe, 0xd7, 0x0a, 0xb4, 0xc9, 0x8f, 0x3b, 0xab, 0x39, 0xe6, 0xb1, 0xa2, 0x04, 0xd6,
-	0xe7, 0xa1, 0x47, 0x00, 0x8c, 0xdc, 0xd5, 0xdc, 0x7f, 0xa9, 0xe2, 0x9b, 0xdb, 0x71, 0x22, 0x31,
-	0xac, 0xab, 0xaa, 0xd2, 0xae, 0x52, 0xa4, 0x5d, 0x55, 0xcb, 0xe1, 0xaa, 0xfa, 0x1a, 0x57, 0x35,
-	0x58, 0x57, 0x5d, 0x80, 0x6d, 0xc6, 0xba, 0x98, 0x37, 0x7a, 0x31, 0xfb, 0xfc, 0x08, 0xfe, 0xb0,
-	0x02, 0xcd, 0x5b, 0x2e, 0xb6, 0xe4, 0x78, 0xdb, 0x83, 0x2d, 0xd3, 0xc5, 0x16, 0x47, 0x1a, 0x98,
-	0x44, 0xc0, 0xff, 0x2d, 0x63, 0x9f, 0x85, 0x6e, 0x64, 0x57, 0x3c, 0x78, 0xa9, 0x65, 0xc1, 0x6a,
-	0x57, 0xa0, 0x41, 0xc2, 0xcc, 0x53, 0x45, 0x39, 0x0e, 0x99, 0x6a, 0x91, 0x91, 0x47, 0x77, 0x8d,
-	0x73, 0xb9, 0xad, 0x99, 0xc8, 0x6d, 0x89, 0x24, 0xd0, 0x12, 0x24, 0x81, 0x0b, 0xb0, 0x3d, 0x37,
-	0x6c, 0x3c, 0x75, 0x47, 0x31, 0x0a, 0xc1, 0x97, 0xd5, 0x0b, 0x1e, 0x1c, 0x85, 0x44, 0x6a, 0xd0,
-	0x9c, 0xcf, 0x1c, 0xd3, 0xf5, 0xd0, 0xb6, 0x7d, 0xb4, 0xe1, 0x6f, 0xd1, 0x2a, 0xde, 0x12, 0xad,
-	0x62, 0xe1, 0x7a, 0xe8, 0x08, 0xd7, 0x83, 0xfa, 0x1c, 0x6c, 0xd1, 0x77, 0xfd, 0xd7, 0xba, 0xfe,
-	0x6b, 0x6d, 0x32, 0xe6, 0x87, 0xc1, 0xbf, 0x14, 0xe8, 0xb2, 0xf9, 0xe8, 0x71, 0x34, 0x7c, 0x6a,
-	0xa3, 0x41, 0xb0, 0xa3, 0xf5, 0x0a, 0xd8, 0xd1, 0xfe, 0x51, 0x81, 0xc6, 0xeb, 0xf6, 0x6c, 0xb2,
-	0x18, 0xbb, 0x9e, 0x03, 0xe7, 0xc1, 0x9f, 0xb1, 0xe0, 0x22, 0x23, 0x8f, 0x6e, 0x70, 0x9d, 0x81,
-	0xaa, 0xf3, 0xad, 0x05, 0xc9, 0xc3, 0xde, 0x9f, 0x9e, 0x33, 0x28, 0x0f, 0xb1, 0x60, 0x6a, 0x93,
-	0x31, 0xdf, 0x19, 0x7d, 0x68, 0x8c, 0x67, 0x96, 0x85, 0xa7, 0xae, 0x1f, 0x41, 0xad, 0x21, 0xfd,
-	0xa9, 0xff, 0xa7, 0x0a, 0x9d, 0xf0, 0x68, 0xec, 0x6d, 0x78, 0x5e, 0x1c, 0x98, 0x74, 0x60, 0xe4,
-	0x67, 0xff, 0x90, 0xdd, 0x9e, 0x19, 0x7f, 0xf3, 0xd1, 0xe5, 0x98, 0x4d, 0x5b, 0x4d, 0x3e, 0x6d,
-	0xf1, 0xbb, 0x7d, 0x2b, 0xb1, 0xdb, 0x27, 0xf7, 0x4d, 0x48, 0xee, 0x9b, 0xde, 0xaa, 0x7d, 0x7b,
-	0x61, 0x4c, 0x5d, 0xd3, 0x5d, 0xd1, 0x55, 0x4b, 0x7f, 0x7b, 0x29, 0xc2, 0xc1, 0xb6, 0x69, 0x9c,
-	0x8c, 0xa6, 0x0b, 0xeb, 0x1e, 0xb6, 0xfd, 0x35, 0xdb, 0x1a, 0x6e, 0x05, 0x83, 0xaf, 0xf9, 0x63,
-	0xdc, 0x0a, 0xe8, 0xf0, 0x2b, 0x80, 0x0f, 0x8c, 0x6e, 0x22, 0x30, 0xf4, 0xb7, 0x60, 0xf7, 0x86,
-	0xef, 0x22, 0x7a, 0x5a, 0x1f, 0xe2, 0xb7, 0x17, 0xd8, 0x71, 0xb3, 0x8f, 0x3c, 0x89, 0x1c, 0x56,
-	0x11, 0xdc, 0x03, 0x7e, 0x81, 0xe0, 0x2c, 0x2f, 0xdf, 0x99, 0xcf, 0xa6, 0x0e, 0xf6, 0xb0, 0x63,
-	0xdb, 0x9e, 0xd9, 0xa3, 0xf1, 0x6c, 0x82, 0x7d, 0xf9, 0xb5, 0x61, 0xcb, 0x1f, 0xb9, 0x31, 0x9b,
-	0x60, 0x4f, 0x7c, 0xf0, 0xd8, 0xc2, 0x8e, 0x63, 0xdc, 0x0f, 0xc5, 0xfb, 0x83, 0xb7, 0x83, 0xb1,
-	0xb8, 0x8b, 0xab, 0x09, 0x17, 0xc7, 0x53, 0xb0, 0xc2, 0xa7, 0x60, 0xfd, 0x97, 0x08, 0x76, 0xef,
-	0xce, 0x27, 0xa7, 0xb1, 0x9c, 0x93, 0x5d, 0x49, 0xa4, 0xf7, 0x74, 0x58, 0x09, 0xd2, 0x14, 0x01,
-	0x69, 0x4b, 0x38, 0xcb, 0x23, 0x2b, 0x83, 0x33, 0xdd, 0x81, 0xdd, 0x60, 0xed, 0x94, 0xc8, 0x88,
-	0x67, 0x2c, 0xaf, 0xb4, 0x14, 0x63, 0xdf, 0x00, 0xf5, 0x55, 0xec, 0x16, 0x6e, 0xa9, 0xfe, 0x1b,
-	0x04, 0x4f, 0x30, 0x82, 0x0b, 0xb4, 0xe6, 0x06, 0x34, 0xa9, 0x26, 0x92, 0x44, 0xcf, 0x67, 0x6c,
-	0xa6, 0x21, 0x8c, 0x70, 0xa2, 0x7e, 0x05, 0x76, 0x22, 0x7c, 0x26, 0x76, 0x64, 0x4d, 0xd7, 0xdf,
-	0x47, 0xb0, 0xcb, 0xcd, 0x2c, 0xd0, 0xb6, 0x57, 0x81, 0xb2, 0x68, 0x62, 0xa7, 0x5f, 0xf5, 0x8f,
-	0x0a, 0xd2, 0xd6, 0xc5, 0xa6, 0xea, 0x6f, 0xc1, 0x53, 0x31, 0xfe, 0xe9, 0x31, 0xa2, 0x30, 0xff,
-	0xfe, 0x0d, 0x81, 0x26, 0x92, 0x5f, 0x20, 0x15, 0x5f, 0x85, 0x33, 0x21, 0x86, 0x6f, 0x07, 0xf2,
-	0x89, 0xbb, 0x07, 0x92, 0x84, 0x50, 0x54, 0xbd, 0x63, 0x76, 0x40, 0xff, 0x19, 0x82, 0x7e, 0x90,
-	0x8f, 0x63, 0x65, 0x01, 0x69, 0x72, 0x64, 0xab, 0x03, 0xc2, 0x93, 0x64, 0x55, 0x7c, 0xcf, 0x5e,
-	0xc1, 0x53, 0x02, 0x40, 0xa5, 0xa4, 0x80, 0x0f, 0x11, 0xf4, 0x83, 0x44, 0xbb, 0x49, 0x32, 0xd2,
-	0x37, 0x03, 0x21, 0x4d, 0x4a, 0x2a, 0x4d, 0x02, 0xa8, 0xa5, 0xd0, 0xf4, 0x5d, 0xe8, 0x07, 0x19,
-	0xfa, 0x13, 0x61, 0xc9, 0xb3, 0x5c, 0xa0, 0xbe, 0x14, 0xcb, 0xbf, 0xee, 0x27, 0xbc, 0x0d, 0x9a,
-	0xad, 0xff, 0x11, 0xc1, 0x59, 0x5e, 0x45, 0x81, 0xa6, 0xdd, 0x8e, 0xae, 0x69, 0x1e, 0x0c, 0x92,
-	0x45, 0x2e, 0xc8, 0xdd, 0xc0, 0x7c, 0x34, 0xed, 0x18, 0x5e, 0xfd, 0x2a, 0x0f, 0x56, 0x7e, 0xf3,
-	0xf8, 0x13, 0x82, 0x27, 0x13, 0x73, 0x0b, 0xb4, 0xf4, 0x2b, 0xd0, 0x89, 0x5b, 0x4a, 0x77, 0x90,
-	0x3c, 0xa6, 0x6e, 0xc5, 0x4c, 0x75, 0xf4, 0xef, 0x21, 0x7a, 0x32, 0xa6, 0x55, 0x40, 0x69, 0xe7,
-	0x67, 0x17, 0x03, 0x93, 0xd7, 0x83, 0xaa, 0xa0, 0xac, 0xb6, 0xa4, 0x67, 0xe7, 0x08, 0x41, 0x29,
-	0x61, 0xff, 0xab, 0xf0, 0x68, 0xbc, 0x01, 0xd3, 0xd3, 0xd3, 0x61, 0x92, 0x14, 0x45, 0x4c, 0x0a,
-	0x8f, 0xad, 0x14, 0x52, 0x5c, 0x7a, 0x38, 0x2e, 0x93, 0x93, 0xe8, 0x74, 0x5c, 0xb2, 0xb5, 0x6f,
-	0xfa, 0xa7, 0xe3, 0xe2, 0x4d, 0xd5, 0x7f, 0x1b, 0x1c, 0x8f, 0x37, 0x62, 0xce, 0x4d, 0x68, 0x85,
-	0xda, 0x25, 0xcf, 0xc7, 0x21, 0x8e, 0x26, 0xc5, 0xa8, 0xbf, 0xc0, 0x00, 0x94, 0xcf, 0x70, 0xbf,
-	0x43, 0xfe, 0xc1, 0x3a, 0x36, 0xb1, 0x40, 0xd3, 0x5e, 0x01, 0x08, 0x4d, 0x93, 0x3d, 0x1d, 0x87,
-	0xb6, 0xb5, 0xa8, 0x6d, 0x8e, 0xfe, 0x6f, 0x04, 0x3b, 0xcc, 0x71, 0xab, 0xb8, 0x2b, 0x9e, 0xb0,
-	0x5c, 0x59, 0xcd, 0x2e, 0x57, 0x2a, 0xd9, 0xe5, 0xca, 0x9a, 0xe8, 0xc4, 0xc0, 0x97, 0x20, 0xeb,
-	0xc9, 0x82, 0xf4, 0xcf, 0xc3, 0x1c, 0x1e, 0x5a, 0x5b, 0x4a, 0xf1, 0x81, 0x2d, 0x1f, 0x29, 0x5c,
-	0xf9, 0x48, 0x7f, 0xaf, 0x02, 0x3b, 0xcc, 0x61, 0x4e, 0xda, 0x09, 0xac, 0xe0, 0x0a, 0x5f, 0x97,
-	0x5a, 0x7b, 0xd4, 0x4c, 0x3a, 0x47, 0xc9, 0x76, 0x4e, 0x2d, 0xdb, 0x39, 0x75, 0x19, 0xe7, 0x34,
-	0x92, 0xce, 0x59, 0xd0, 0x4d, 0xa6, 0x54, 0xdf, 0xe8, 0x73, 0xd8, 0x61, 0x8e, 0x93, 0x1b, 0xe7,
-	0xde, 0x33, 0x94, 0xd3, 0x58, 0x8a, 0xa1, 0x47, 0xb0, 0x1d, 0x1d, 0xb8, 0x0a, 0xb2, 0xd2, 0x3b,
-	0x1a, 0xa8, 0x71, 0xa9, 0x05, 0x5a, 0x72, 0x0d, 0x1a, 0x44, 0x0f, 0xc9, 0xdd, 0xcf, 0xcb, 0x9d,
-	0xdd, 0x86, 0x74, 0x1a, 0x29, 0xe9, 0xd0, 0x56, 0x41, 0x71, 0x57, 0xfe, 0x5f, 0x07, 0x7b, 0x56,
-	0x24, 0xb8, 0x40, 0xab, 0xaf, 0x43, 0x33, 0xec, 0x8f, 0x04, 0x69, 0x5d, 0xd6, 0xec, 0x70, 0x9e,
-	0xfe, 0xa3, 0x30, 0xa9, 0x93, 0xce, 0x88, 0xb4, 0xe9, 0xa4, 0x97, 0x50, 0x49, 0xef, 0x25, 0x54,
-	0xd7, 0xf6, 0x12, 0x14, 0xb6, 0x97, 0x10, 0xe5, 0xdb, 0x10, 0x48, 0x59, 0xf9, 0x36, 0x56, 0x06,
-	0x57, 0xb8, 0x32, 0xb8, 0xfe, 0x31, 0xa2, 0xf9, 0x36, 0x2f, 0x3f, 0xac, 0xe0, 0x0a, 0x5f, 0x5f,
-	0x4f, 0x47, 0x44, 0x88, 0x55, 0xd2, 0x89, 0xad, 0xad, 0x25, 0xb6, 0xce, 0x12, 0x1b, 0xe6, 0xca,
-	0x52, 0x79, 0x8d, 0x72, 0x65, 0x59, 0xbc, 0x45, 0xb9, 0xb2, 0x5c, 0x43, 0x83, 0x5c, 0x59, 0xac,
-	0x95, 0x34, 0x57, 0x6e, 0xc2, 0x92, 0x6b, 0xd0, 0x20, 0x7a, 0x24, 0x73, 0x25, 0x05, 0x41, 0xa7,
-	0xe9, 0x97, 0xe3, 0xd8, 0xe4, 0x0f, 0xb9, 0x24, 0x15, 0x46, 0xf3, 0x8a, 0x4d, 0x85, 0x04, 0x9d,
-	0x6c, 0x2a, 0xa4, 0x56, 0x85, 0xf3, 0xf4, 0x7f, 0x22, 0xd0, 0xc8, 0x9d, 0x39, 0xde, 0xa9, 0x2c,
-	0x6a, 0x93, 0xe7, 0xef, 0x37, 0xd5, 0xc4, 0x55, 0x2e, 0xde, 0xd2, 0x53, 0xb2, 0x5a, 0x7a, 0xb5,
-	0xcc, 0x96, 0x5e, 0x9d, 0x0f, 0xaa, 0x0f, 0x10, 0x3c, 0x2d, 0x34, 0xb0, 0x94, 0x44, 0x2b, 0x6c,
-	0x0d, 0x2b, 0xc2, 0xd6, 0xb0, 0xfe, 0x7e, 0x05, 0x34, 0x72, 0x53, 0x3f, 0x95, 0x2b, 0x84, 0xba,
-	0x2a, 0xe2, 0x36, 0xf4, 0x69, 0x8f, 0xe2, 0x09, 0x87, 0xd6, 0xd6, 0x3a, 0xb4, 0x9e, 0xe5, 0xd0,
-	0x46, 0xa6, 0x43, 0x9b, 0xbc, 0x43, 0xdf, 0x81, 0xa7, 0x85, 0x2c, 0x95, 0x92, 0xf7, 0xde, 0x43,
-	0xa0, 0x91, 0xfa, 0xc2, 0x27, 0xe7, 0x23, 0x8f, 0x02, 0x21, 0x88, 0x52, 0x28, 0x38, 0xf6, 0xeb,
-	0x92, 0x1b, 0x37, 0x5f, 0xff, 0x33, 0x82, 0x7e, 0x52, 0x51, 0x81, 0x26, 0x1e, 0x41, 0x97, 0x05,
-	0x43, 0xb6, 0x86, 0x2f, 0x64, 0x95, 0x09, 0x18, 0x44, 0x1d, 0x06, 0xb7, 0x3e, 0x86, 0xe7, 0x78,
-	0xd0, 0xce, 0xf5, 0x55, 0xc1, 0x1b, 0xe5, 0xc7, 0x08, 0xf4, 0x75, 0x5a, 0x0a, 0x24, 0xe9, 0x2e,
-	0xf4, 0x58, 0x92, 0xe8, 0x56, 0x93, 0x8f, 0xa5, 0x2e, 0xc3, 0x92, 0x93, 0x42, 0x53, 0xc1, 0x77,
-	0xaf, 0x14, 0x9a, 0x36, 0x71, 0x17, 0xdb, 0x10, 0x4d, 0xc7, 0x42, 0x03, 0x8a, 0xef, 0xc1, 0xff,
-	0x1d, 0xc1, 0xb9, 0xb5, 0x8a, 0xfe, 0xf7, 0xa9, 0x7a, 0x29, 0x68, 0x97, 0x60, 0x7b, 0x89, 0xed,
-	0x37, 0x82, 0x54, 0x15, 0xe3, 0x67, 0xb2, 0xb0, 0xac, 0xd5, 0x68, 0x6e, 0xd8, 0x86, 0x45, 0x60,
-	0x83, 0x3f, 0xf4, 0xba, 0x37, 0xa2, 0x7f, 0x14, 0xa4, 0x1a, 0x6e, 0x72, 0x81, 0x36, 0x7f, 0x0e,
-	0xba, 0x8e, 0x2f, 0x7c, 0x14, 0x4f, 0xaa, 0xad, 0x61, 0xc7, 0x89, 0xab, 0x24, 0xdb, 0xa3, 0xf7,
-	0xda, 0x62, 0xee, 0x9a, 0xa4, 0x9e, 0x5f, 0xf5, 0xb7, 0xc7, 0x25, 0xb6, 0xef, 0xfa, 0x63, 0x07,
-	0x7f, 0x39, 0x07, 0xdb, 0x89, 0x7f, 0xa2, 0xa1, 0x3e, 0x80, 0x5e, 0xf0, 0xe5, 0xd8, 0x88, 0xba,
-	0x55, 0x3d, 0xcc, 0xe0, 0x53, 0xf8, 0x19, 0x93, 0x76, 0x39, 0xe7, 0x2c, 0xc2, 0xd2, 0x03, 0xe8,
-	0x2d, 0xfc, 0x5d, 0x59, 0x5e, 0xbf, 0xf0, 0x63, 0xa2, 0x4c, 0xfd, 0x29, 0x1f, 0xfa, 0x3c, 0x80,
-	0x5e, 0xf0, 0x5d, 0x9b, 0xbc, 0x7e, 0xe1, 0xa7, 0x3b, 0x99, 0xfa, 0x53, 0xbe, 0xbd, 0x59, 0xc0,
-	0xd6, 0x7d, 0xec, 0x46, 0xca, 0x2f, 0x66, 0x88, 0x49, 0x7e, 0x4a, 0xa3, 0x1d, 0xe4, 0x99, 0x42,
-	0xd4, 0xbe, 0x03, 0xdd, 0x98, 0x5a, 0x13, 0x3b, 0xea, 0x25, 0x69, 0x29, 0xd1, 0xa7, 0x2c, 0xda,
-	0x61, 0xbe, 0x49, 0x44, 0xf9, 0x4f, 0x10, 0xec, 0xc4, 0x8d, 0xa6, 0xdf, 0x5e, 0xa8, 0x2f, 0xca,
-	0x5b, 0xc2, 0x7e, 0x6e, 0xa2, 0x5d, 0x3d, 0xc5, 0x4c, 0x82, 0xe6, 0xc7, 0x08, 0x9e, 0x20, 0x4b,
-	0x20, 0x5e, 0x71, 0x55, 0xaf, 0x48, 0x05, 0x74, 0xb2, 0x67, 0xad, 0xbd, 0x98, 0x7f, 0x62, 0x0c,
-	0x0a, 0x59, 0x0d, 0xb9, 0xa0, 0xa4, 0x7d, 0x5b, 0x91, 0x09, 0x25, 0xfd, 0x4b, 0x07, 0x0f, 0x0a,
-	0x59, 0x18, 0xb9, 0xa0, 0xa4, 0x7d, 0xc0, 0x90, 0x09, 0x25, 0xfd, 0xd3, 0x83, 0x77, 0xe1, 0x8c,
-	0x17, 0x2d, 0x0c, 0x0c, 0x89, 0xc0, 0x13, 0x60, 0xb8, 0x9c, 0x73, 0x16, 0x01, 0xf0, 0x7d, 0x04,
-	0xdb, 0x3c, 0x02, 0x47, 0xcd, 0x27, 0x2c, 0x5c, 0x32, 0x2f, 0xe4, 0x9d, 0x16, 0xb1, 0x40, 0xa2,
-	0x34, 0xbc, 0x47, 0x49, 0x66, 0x6a, 0xae, 0xb9, 0x28, 0x99, 0xa9, 0x13, 0x8d, 0xc3, 0x77, 0xe1,
-	0x0c, 0x89, 0x4d, 0x79, 0x00, 0xc2, 0xe6, 0xb6, 0x64, 0xaa, 0x16, 0x01, 0x20, 0x11, 0x29, 0x0f,
-	0x40, 0xd8, 0x49, 0x96, 0xcc, 0xd5, 0x09, 0x00, 0x4b, 0xe8, 0x78, 0x61, 0x10, 0x69, 0x97, 0x48,
-	0xd6, 0xbc, 0xea, 0x83, 0x3c, 0x53, 0x88, 0xde, 0x55, 0x90, 0xac, 0xa3, 0xbe, 0xa4, 0x9a, 0x43,
-	0x4a, 0x18, 0x78, 0x97, 0x72, 0xcd, 0x89, 0xf6, 0x09, 0x36, 0x37, 0x66, 0xee, 0x13, 0xa2, 0xa6,
-	0xa7, 0x76, 0x98, 0x6f, 0x52, 0xa4, 0x9c, 0xcd, 0x86, 0x99, 0xca, 0x45, 0xcd, 0x3e, 0xed, 0x30,
-	0xdf, 0xa4, 0x48, 0x39, 0x9b, 0xff, 0x32, 0x95, 0x8b, 0xba, 0x5d, 0xda, 0x61, 0xbe, 0x49, 0x44,
-	0xb9, 0x0d, 0xed, 0x58, 0xc2, 0x51, 0xbf, 0x24, 0x9d, 0x33, 0xa8, 0xda, 0x8b, 0x39, 0x66, 0xb0,
-	0x27, 0x11, 0xda, 0xec, 0x50, 0xe5, 0x45, 0x38, 0x39, 0x82, 0x3b, 0xd1, 0xdb, 0x89, 0x22, 0x8c,
-	0xdc, 0x53, 0x25, 0x23, 0x8c, 0xbd, 0x1a, 0x4b, 0x46, 0x18, 0x7f, 0xd3, 0x8d, 0x22, 0x4c, 0x56,
-	0xb9, 0xa8, 0xbd, 0x21, 0x19, 0x61, 0x02, 0xe5, 0x24, 0xc2, 0x64, 0x95, 0x8b, 0x7a, 0x04, 0x92,
-	0x11, 0xc6, 0x2b, 0x27, 0x11, 0x46, 0x35, 0x4b, 0x44, 0x18, 0xa7, 0xf6, 0x62, 0x8e, 0x19, 0x6c,
-	0x84, 0xd1, 0x1a, 0xb2, 0x2a, 0x2f, 0x22, 0x4f, 0x84, 0x25, 0x4a, 0xe6, 0x3f, 0x45, 0xb0, 0x4b,
-	0xb7, 0x4e, 0xe6, 0x02, 0xa9, 0x5e, 0x95, 0xdb, 0x09, 0x05, 0x25, 0x2b, 0xed, 0xa5, 0xd3, 0x4c,
-	0x8d, 0x01, 0xa2, 0x5b, 0x69, 0x3e, 0x40, 0xe9, 0x65, 0xde, 0x4c, 0x40, 0xeb, 0x6a, 0x9f, 0x1e,
-	0x20, 0xba, 0xb5, 0xe6, 0x03, 0x94, 0x5e, 0xd3, 0xcc, 0x04, 0xb4, 0xae, 0x12, 0xf9, 0x43, 0x04,
-	0xaa, 0xbf, 0xe5, 0xb1, 0x68, 0x24, 0xce, 0x4e, 0x42, 0x28, 0x57, 0x72, 0xcf, 0x23, 0x38, 0x7e,
-	0x8f, 0xe0, 0x33, 0x49, 0x1c, 0xce, 0xe8, 0xde, 0x2a, 0x5c, 0x39, 0xd7, 0x72, 0xca, 0x4e, 0x54,
-	0xf5, 0xb4, 0x97, 0x1f, 0x42, 0x42, 0x36, 0x4e, 0xba, 0x87, 0x9c, 0x02, 0x27, 0xb7, 0xa7, 0xbc,
-	0xfc, 0x10, 0x12, 0x08, 0xce, 0x3f, 0x20, 0x78, 0x36, 0x05, 0x67, 0x78, 0x03, 0x3e, 0x85, 0x1a,
-	0xfe, 0x46, 0x7c, 0xfd, 0x61, 0x44, 0x70, 0x21, 0xc8, 0xd6, 0x5f, 0x64, 0x42, 0x50, 0x54, 0x4b,
-	0x92, 0x09, 0x41, 0x61, 0x19, 0xe9, 0xfa, 0xf9, 0xaf, 0x6d, 0xd3, 0x97, 0x43, 0xd6, 0x3e, 0xaa,
-	0x24, 0x2b, 0x39, 0xf7, 0xea, 0xfe, 0x7f, 0x9d, 0x71, 0xe9, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0x3b, 0x36, 0xaf, 0xe6, 0x88, 0x43, 0x00, 0x00,
+	// 2611 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5c, 0x5b, 0x8f, 0x1c, 0x47,
+	0x15, 0x56, 0xcf, 0xf4, 0xec, 0xcc, 0x9c, 0xb9, 0x79, 0x3b, 0xbb, 0xce, 0xa4, 0xad, 0xe0, 0x4d,
+	0x07, 0xe2, 0xc5, 0xc0, 0x0a, 0xaf, 0xd7, 0x76, 0x36, 0x4f, 0x8e, 0xbd, 0x49, 0xe4, 0x07, 0x07,
+	0x6b, 0xd6, 0x4e, 0x44, 0x24, 0x34, 0xb4, 0x67, 0x6a, 0x9d, 0x0e, 0x3b, 0x97, 0x74, 0xf7, 0x6c,
+	0x18, 0x22, 0x1c, 0x04, 0x42, 0x8a, 0x84, 0x04, 0x2f, 0x48, 0x5c, 0x24, 0x2e, 0xe1, 0xa2, 0x90,
+	0x20, 0x81, 0x04, 0x42, 0x42, 0xe2, 0x01, 0x90, 0xf8, 0x19, 0xfc, 0x83, 0xfc, 0x04, 0x24, 0x84,
+	0xba, 0xba, 0xaa, 0xbb, 0xba, 0xba, 0x7a, 0xba, 0x7a, 0xdc, 0xd3, 0x21, 0x96, 0xdf, 0xbc, 0x35,
+	0x5d, 0x75, 0xbe, 0xf3, 0x9d, 0x53, 0xe7, 0x54, 0x9d, 0x3a, 0x09, 0x3c, 0x7e, 0xf3, 0x10, 0xd9,
+	0x27, 0xd6, 0x00, 0xdd, 0x18, 0x9f, 0xa0, 0xb1, 0x3b, 0xb1, 0xe7, 0x3b, 0x53, 0x7b, 0xe2, 0x4e,
+	0xb4, 0x27, 0x27, 0xf6, 0xbd, 0x9d, 0x7b, 0xa6, 0x8b, 0x6c, 0x73, 0x80, 0x76, 0x46, 0x8e, 0xff,
+	0x95, 0xf7, 0xe3, 0x1b, 0x68, 0xe0, 0xea, 0xda, 0xc1, 0xe8, 0xf8, 0x85, 0xaf, 0xbb, 0x68, 0xec,
+	0x58, 0x93, 0xb1, 0x3f, 0xc5, 0xf8, 0x57, 0x09, 0x6a, 0x2f, 0x9a, 0x03, 0xeb, 0xd8, 0x72, 0xe7,
+	0xda, 0x59, 0x68, 0x1c, 0x91, 0x7f, 0xf7, 0xad, 0x61, 0x57, 0xd9, 0x52, 0xb6, 0xcb, 0x3d, 0xa0,
+	0x43, 0x37, 0x86, 0xda, 0x39, 0xa8, 0x0e, 0x6c, 0x64, 0xba, 0x68, 0xd8, 0x2d, 0x6d, 0x29, 0xdb,
+	0x8d, 0xdd, 0xd6, 0xce, 0x70, 0x74, 0xbc, 0x73, 0x60, 0xba, 0xe8, 0xb6, 0x35, 0x42, 0x3d, 0xfa,
+	0xab, 0xf6, 0x59, 0xa8, 0x8d, 0x26, 0x43, 0xeb, 0xc8, 0x42, 0xc3, 0x6e, 0x59, 0xf4, 0x65, 0xf0,
+	0xb3, 0xb7, 0xe6, 0x10, 0x1d, 0x23, 0x6f, 0x4d, 0x55, 0xb8, 0x26, 0xf9, 0x55, 0x7b, 0x12, 0xc0,
+	0x72, 0xfa, 0xf4, 0xdb, 0xca, 0x96, 0xb2, 0x5d, 0xeb, 0xd5, 0x2d, 0xe7, 0x80, 0xfc, 0xdc, 0x85,
+	0xea, 0x09, 0xb2, 0x3d, 0xd5, 0xba, 0x6b, 0x5b, 0xca, 0x76, 0xa5, 0x47, 0xff, 0xf4, 0xd4, 0xa2,
+	0x5c, 0x78, 0x6a, 0x55, 0x7d, 0xb5, 0xe8, 0xd0, 0x8d, 0xa1, 0xf6, 0x34, 0xb4, 0x02, 0xbd, 0xc7,
+	0xe6, 0x08, 0x75, 0x6b, 0x5b, 0xca, 0x76, 0xbd, 0xd7, 0xa4, 0x83, 0x2f, 0x9b, 0x23, 0xa4, 0x9d,
+	0x81, 0xfa, 0x1b, 0xce, 0x64, 0xdc, 0x1f, 0x9a, 0xae, 0xd9, 0xad, 0xe3, 0x0f, 0x6a, 0xde, 0xc0,
+	0x81, 0xe9, 0x9a, 0xc6, 0x7b, 0x65, 0xe8, 0x50, 0x1a, 0x5f, 0xb5, 0xcd, 0xe9, 0x14, 0xd9, 0x8f,
+	0xd8, 0x5c, 0x96, 0x4d, 0xed, 0x36, 0xb4, 0x07, 0xaf, 0x5b, 0xc7, 0xc3, 0xbe, 0x33, 0xbb, 0x6b,
+	0xda, 0xc8, 0x74, 0xba, 0xb0, 0x55, 0xde, 0x6e, 0xec, 0x7e, 0x61, 0x67, 0xa1, 0x83, 0xef, 0x1c,
+	0xfa, 0x9f, 0x13, 0x03, 0xf4, 0x5a, 0x78, 0x11, 0x32, 0xe8, 0x18, 0x7f, 0x2d, 0x41, 0x83, 0xfc,
+	0x71, 0x7b, 0x3e, 0x45, 0xbc, 0x22, 0x4a, 0x4c, 0x91, 0x67, 0xa0, 0x43, 0x00, 0xf4, 0xdd, 0xf9,
+	0x14, 0x7f, 0x54, 0xc2, 0x5c, 0xb4, 0x9c, 0x70, 0x99, 0xa8, 0x1d, 0xcb, 0xd2, 0x76, 0x54, 0xa5,
+	0xed, 0x58, 0xc9, 0x60, 0xc7, 0xb5, 0x05, 0x76, 0xac, 0x46, 0xed, 0x78, 0x1e, 0xd6, 0x23, 0xda,
+	0x31, 0xa6, 0xea, 0x30, 0xfa, 0x79, 0xd6, 0x32, 0x3e, 0x28, 0x41, 0xed, 0x86, 0x8b, 0x46, 0x72,
+	0xbc, 0x6d, 0x41, 0xd3, 0x72, 0xd1, 0x88, 0x23, 0x0d, 0x2c, 0xb2, 0xc0, 0x27, 0x96, 0xb1, 0x4f,
+	0x43, 0x3b, 0xd4, 0x8b, 0xf5, 0x6c, 0xaa, 0x19, 0xe6, 0xea, 0x3d, 0x15, 0xaa, 0xc4, 0xcd, 0x3c,
+	0x51, 0x94, 0xe3, 0x80, 0xa9, 0x3a, 0x19, 0x79, 0x78, 0x03, 0x00, 0x17, 0xf8, 0x6a, 0xb1, 0xc0,
+	0x17, 0x8b, 0x10, 0x75, 0x41, 0x84, 0x38, 0x0f, 0xeb, 0x53, 0xd3, 0x46, 0x63, 0xb7, 0xcf, 0x50,
+	0x08, 0x78, 0xad, 0x8e, 0xff, 0xc3, 0x61, 0x40, 0xa4, 0x0e, 0xb5, 0xe9, 0xc4, 0xb1, 0x5c, 0x0f,
+	0x6d, 0x03, 0xa3, 0x0d, 0xfe, 0x16, 0xed, 0xe2, 0xa6, 0x68, 0x17, 0x0b, 0xf7, 0x43, 0x4b, 0xb8,
+	0x1f, 0xb4, 0xa7, 0xa0, 0x49, 0xbf, 0xc5, 0x9f, 0xb5, 0xf1, 0x67, 0x0d, 0x32, 0x16, 0x0f, 0x70,
+	0x1d, 0x2e, 0x5d, 0xfc, 0x57, 0x85, 0x76, 0x34, 0x58, 0x3d, 0x72, 0x95, 0x47, 0xae, 0x22, 0x72,
+	0x15, 0x41, 0x2e, 0x3c, 0x95, 0x43, 0x2e, 0xfc, 0xa8, 0x04, 0xd5, 0x5b, 0xf6, 0x64, 0x38, 0x1b,
+	0xb8, 0x9e, 0x75, 0xa7, 0xfe, 0x3f, 0x19, 0xcf, 0x23, 0x23, 0x0f, 0xaf, 0xe7, 0x9d, 0x82, 0xb2,
+	0xf3, 0xb5, 0x19, 0x89, 0xe0, 0xde, 0x3f, 0x3d, 0x4b, 0x51, 0x1e, 0x18, 0x4f, 0x6b, 0x90, 0x31,
+	0x6c, 0xa9, 0x2e, 0x54, 0x07, 0x93, 0xd1, 0x08, 0x8d, 0x5d, 0xec, 0x5e, 0xf5, 0x1e, 0xfd, 0x33,
+	0x6a, 0xc3, 0x06, 0xb7, 0xdd, 0x7f, 0xa2, 0x42, 0x2b, 0x38, 0xab, 0x7b, 0x79, 0xd4, 0xf3, 0x20,
+	0x8b, 0x0e, 0xf4, 0x71, 0x52, 0x09, 0xa8, 0xef, 0x58, 0xec, 0x97, 0x0f, 0xaf, 0x01, 0xa2, 0x01,
+	0xaf, 0xc6, 0x07, 0x3c, 0xfe, 0x10, 0x51, 0x8f, 0x1d, 0x22, 0xe2, 0xe9, 0x18, 0xe2, 0xe9, 0xd8,
+	0xdb, 0xef, 0x6f, 0xce, 0xcc, 0xb1, 0x6b, 0xb9, 0x73, 0xba, 0xdf, 0xe9, 0xdf, 0x5e, 0x70, 0x71,
+	0x90, 0x6d, 0x99, 0xc7, 0xfd, 0xf1, 0x6c, 0x74, 0x17, 0xd9, 0x78, 0xb7, 0xd7, 0x7b, 0x4d, 0x7f,
+	0xf0, 0x65, 0x3c, 0xc6, 0x6d, 0x8f, 0x16, 0xbf, 0x3d, 0x78, 0xaf, 0x69, 0xc7, 0xbd, 0x66, 0x61,
+	0x2a, 0x78, 0xbf, 0x04, 0xcd, 0x17, 0x30, 0x9c, 0xc3, 0xc1, 0xeb, 0x68, 0x64, 0xa6, 0x1f, 0xaf,
+	0xce, 0x42, 0x03, 0xe1, 0x09, 0xbe, 0xc0, 0x12, 0x5e, 0x10, 0xfc, 0x21, 0x2c, 0xef, 0x93, 0x79,
+	0xba, 0x3a, 0x0b, 0x0d, 0xcc, 0x92, 0x83, 0x69, 0x20, 0x1b, 0x13, 0xbc, 0x21, 0x9f, 0x18, 0xe3,
+	0x1b, 0xb0, 0x79, 0x1d, 0x03, 0xa7, 0x17, 0xad, 0x1e, 0x7a, 0x73, 0x86, 0x1c, 0x37, 0x9d, 0xb1,
+	0x58, 0x12, 0x29, 0xa5, 0xdd, 0x48, 0xca, 0x9c, 0x95, 0x7e, 0xa4, 0xc0, 0x69, 0x5e, 0xb8, 0x33,
+	0x9d, 0x8c, 0x1d, 0xe4, 0x29, 0x8c, 0x6c, 0x7b, 0x62, 0xf7, 0x07, 0x93, 0x21, 0xc2, 0xc2, 0x2b,
+	0xbd, 0x3a, 0x1e, 0xb9, 0x3e, 0x19, 0x22, 0x4f, 0xb6, 0xff, 0xf3, 0x08, 0x39, 0x8e, 0x79, 0x2f,
+	0x90, 0x8d, 0x07, 0x6f, 0xfa, 0x63, 0x2c, 0x2b, 0xe5, 0x18, 0x2b, 0x6c, 0x82, 0x54, 0xf9, 0x04,
+	0x69, 0xfc, 0x45, 0x81, 0xcd, 0x3b, 0xd3, 0xe1, 0x32, 0xb4, 0x70, 0x6b, 0x97, 0x62, 0xc9, 0x37,
+	0x19, 0x56, 0x8c, 0x51, 0x35, 0x8d, 0xd1, 0x0a, 0xc7, 0xe8, 0x09, 0x9c, 0xe6, 0x61, 0x17, 0x41,
+	0xa8, 0xe1, 0xc0, 0xa6, 0xef, 0x8b, 0x05, 0xd2, 0xe5, 0x29, 0xcb, 0x0b, 0x2d, 0x44, 0xd9, 0x57,
+	0x40, 0x7b, 0x09, 0xb9, 0xb9, 0x6b, 0x6a, 0xfc, 0x5c, 0x81, 0xc7, 0x22, 0x0b, 0xe7, 0xa8, 0xcd,
+	0x75, 0xa8, 0x51, 0x49, 0x24, 0x7c, 0x9d, 0x4b, 0x39, 0xea, 0x04, 0x30, 0x82, 0x89, 0xc6, 0x15,
+	0xd8, 0x08, 0xf1, 0x59, 0xc8, 0x91, 0x55, 0xdd, 0xf8, 0x8d, 0x02, 0x9b, 0xdc, 0xcc, 0x1c, 0x75,
+	0x7b, 0x09, 0x28, 0x8b, 0x16, 0x72, 0xba, 0x65, 0x7c, 0x90, 0x93, 0xd6, 0x8e, 0x99, 0x6a, 0x7c,
+	0x05, 0x9e, 0x60, 0xf8, 0xa7, 0x87, 0xbc, 0xdc, 0xec, 0xfb, 0x37, 0x05, 0x74, 0xd1, 0xfa, 0x39,
+	0x52, 0xf1, 0x65, 0x38, 0x15, 0x60, 0x78, 0xcb, 0x5f, 0x9f, 0x98, 0x7b, 0x47, 0x92, 0x10, 0x8a,
+	0xaa, 0x73, 0x14, 0x1d, 0x30, 0x7e, 0xa0, 0x40, 0xd7, 0x0f, 0xd6, 0x4c, 0xb9, 0x47, 0x9a, 0x1c,
+	0xd9, 0xaa, 0x8f, 0xf0, 0x12, 0x50, 0x16, 0xd7, 0x4f, 0xe6, 0xf0, 0x84, 0x00, 0x50, 0x21, 0x21,
+	0xe0, 0x03, 0x05, 0xba, 0x7e, 0xa0, 0x5d, 0x25, 0x19, 0xc9, 0x99, 0x42, 0x48, 0x93, 0x9a, 0x48,
+	0x93, 0x00, 0x6a, 0x21, 0x34, 0x7d, 0x13, 0xba, 0x7e, 0x84, 0xfe, 0x58, 0x58, 0xf2, 0x34, 0x17,
+	0x88, 0x2f, 0x44, 0xf3, 0xaf, 0xe2, 0x80, 0xb7, 0x42, 0xb5, 0x8d, 0xdf, 0x2b, 0x70, 0x9a, 0x17,
+	0x91, 0xa3, 0x6a, 0x37, 0xc3, 0x1b, 0xb6, 0x07, 0x83, 0x44, 0x91, 0xf3, 0x72, 0xf7, 0x63, 0x8c,
+	0xa6, 0xc1, 0xe0, 0x35, 0xf6, 0x79, 0xb0, 0xf2, 0xc9, 0xe3, 0x0f, 0x0a, 0x3c, 0x1e, 0x9b, 0x9b,
+	0xa3, 0xa6, 0x5f, 0x82, 0x16, 0xab, 0x29, 0xcd, 0x20, 0x59, 0x54, 0x6d, 0x32, 0xaa, 0x3a, 0xc6,
+	0xb7, 0x14, 0x7a, 0xa6, 0xa6, 0xd5, 0x5d, 0x69, 0xe3, 0xa7, 0x17, 0x79, 0xe3, 0xf7, 0xb3, 0xb2,
+	0xa0, 0x5c, 0x7a, 0x42, 0x0f, 0xd6, 0x21, 0x82, 0x42, 0xdc, 0xfe, 0xa7, 0xc1, 0xb9, 0x79, 0x05,
+	0xaa, 0x27, 0x87, 0xc3, 0x38, 0x29, 0xaa, 0x98, 0x14, 0x1e, 0x5b, 0x21, 0xa4, 0xb8, 0xf4, 0x70,
+	0x5c, 0x24, 0x27, 0xe1, 0xe9, 0xb8, 0x60, 0x6d, 0x5f, 0xc5, 0xa7, 0xe3, 0xfc, 0x55, 0x35, 0x7e,
+	0xe1, 0x1f, 0x8f, 0x57, 0xa2, 0xce, 0x01, 0xd4, 0x03, 0xe9, 0x92, 0xe7, 0xe3, 0x00, 0x47, 0x8d,
+	0x62, 0x34, 0x2e, 0x47, 0x00, 0xca, 0x47, 0xb8, 0x5f, 0x29, 0xf8, 0x60, 0xcd, 0x4c, 0xcc, 0x51,
+	0xb5, 0x17, 0x01, 0x02, 0xd5, 0x64, 0x4f, 0xc7, 0x81, 0x6e, 0x75, 0xaa, 0x9b, 0x63, 0xbc, 0x5b,
+	0x82, 0x8d, 0xc8, 0x71, 0x2b, 0xbf, 0x2b, 0x9e, 0xb0, 0xd2, 0x5c, 0x4e, 0xaf, 0x34, 0xab, 0xe9,
+	0x95, 0xe6, 0x8a, 0xe8, 0xc4, 0xc0, 0x57, 0x8f, 0xd7, 0x52, 0xaa, 0xc7, 0x55, 0xee, 0x96, 0xfd,
+	0xc3, 0x20, 0xc0, 0x07, 0x54, 0x14, 0x52, 0xb6, 0x88, 0x16, 0xf7, 0x54, 0xae, 0xb8, 0x67, 0xfc,
+	0xb2, 0x04, 0x1b, 0x91, 0x93, 0x9e, 0xb4, 0x85, 0xa2, 0x0b, 0x97, 0xf8, 0xaa, 0xe1, 0xc2, 0x73,
+	0x68, 0xdc, 0x72, 0x6a, 0xba, 0xe5, 0x2a, 0xe9, 0x96, 0x5b, 0x93, 0xb1, 0x5c, 0x35, 0xc5, 0x72,
+	0x35, 0xce, 0x72, 0x33, 0x9a, 0x9e, 0x0a, 0x35, 0x9c, 0x31, 0x85, 0x8d, 0xc8, 0x41, 0x74, 0xe5,
+	0x86, 0xf1, 0x14, 0xe5, 0x24, 0x16, 0xa2, 0xe8, 0x21, 0xac, 0x87, 0x47, 0xb5, 0x9c, 0xb4, 0xf4,
+	0x0e, 0x15, 0x1a, 0xbb, 0x6a, 0x8e, 0x9a, 0x5c, 0x85, 0x2a, 0x91, 0x43, 0xa2, 0xfe, 0x33, 0x72,
+	0xa7, 0xbe, 0x1e, 0x9d, 0x46, 0x8a, 0x41, 0xf4, 0x09, 0x28, 0xbf, 0x62, 0xc1, 0xcf, 0xfc, 0x6c,
+	0x17, 0x2e, 0x9c, 0xa3, 0xd6, 0xd7, 0xa0, 0x16, 0xbc, 0x7b, 0xf9, 0x09, 0x41, 0x56, 0xed, 0x60,
+	0x9e, 0xf1, 0x6b, 0x85, 0xa6, 0x03, 0xf2, 0xe2, 0x25, 0xad, 0x3a, 0x79, 0x23, 0x2a, 0x25, 0xbf,
+	0x11, 0x95, 0x17, 0xbe, 0x11, 0xa9, 0x0b, 0xde, 0x88, 0x2a, 0x89, 0x91, 0x3a, 0x40, 0x59, 0x54,
+	0xa4, 0x66, 0x9e, 0x37, 0x54, 0xee, 0x79, 0xc3, 0xf8, 0xb7, 0x42, 0x23, 0x75, 0x56, 0xf2, 0xa2,
+	0x0b, 0x97, 0xf8, 0x77, 0x93, 0x64, 0x44, 0x84, 0x75, 0x35, 0x99, 0xf5, 0xca, 0x42, 0xd6, 0xd7,
+	0x16, 0xb0, 0x5e, 0x4d, 0x8a, 0xb2, 0x85, 0x92, 0x1e, 0x46, 0xd9, 0xa2, 0x48, 0x0d, 0xa3, 0x6c,
+	0xb1, 0x8a, 0xfa, 0x51, 0x36, 0x5f, 0x2d, 0x69, 0x94, 0x5d, 0x85, 0x26, 0x57, 0xa1, 0x4a, 0xe4,
+	0x48, 0x46, 0x59, 0x0a, 0x82, 0x4e, 0x33, 0x2e, 0xb1, 0xd8, 0xe4, 0x0f, 0xd6, 0x24, 0x88, 0x86,
+	0xf3, 0xf2, 0x0d, 0xa2, 0x04, 0x9d, 0x6c, 0x10, 0xa5, 0x5a, 0x05, 0xf3, 0x8c, 0xff, 0x28, 0xa0,
+	0x93, 0x7b, 0x3a, 0xfb, 0x3c, 0x9d, 0xd7, 0xf1, 0x80, 0xbf, 0x53, 0x95, 0x63, 0xd7, 0x47, 0xf6,
+	0x1d, 0x57, 0x4d, 0x7b, 0xc7, 0xad, 0xa4, 0xbe, 0xe3, 0xae, 0xf1, 0x5b, 0x67, 0x61, 0x98, 0x78,
+	0x5f, 0x81, 0x33, 0x42, 0xed, 0x0b, 0x09, 0xd1, 0xc2, 0x66, 0x01, 0x55, 0xd8, 0x2c, 0x60, 0xfc,
+	0xb3, 0x04, 0x3a, 0x29, 0x1d, 0x2c, 0x65, 0x27, 0xa1, 0xac, 0x92, 0xb8, 0x31, 0x61, 0xd9, 0xe3,
+	0x7f, 0xcc, 0xda, 0x95, 0x85, 0xd6, 0x5e, 0x4b, 0xb3, 0x76, 0x35, 0xd5, 0xda, 0xb5, 0x85, 0xd6,
+	0xe6, 0x9b, 0x79, 0xdf, 0x86, 0x33, 0x42, 0x0a, 0x0b, 0x89, 0x98, 0xdf, 0x51, 0x40, 0x27, 0xd5,
+	0x90, 0x8f, 0xcf, 0x80, 0x1e, 0x05, 0x42, 0x10, 0x85, 0x50, 0x70, 0x84, 0xab, 0xa8, 0x2b, 0x57,
+	0xdf, 0xf8, 0xb3, 0x02, 0xdd, 0xb8, 0xa0, 0x1c, 0x55, 0x3c, 0x84, 0x76, 0x14, 0x0c, 0x49, 0x2a,
+	0x9f, 0x4f, 0x2b, 0x6a, 0x44, 0x10, 0xb5, 0x22, 0xb8, 0x8d, 0x01, 0x3c, 0xc5, 0x83, 0x76, 0xae,
+	0xcd, 0x73, 0x4e, 0xb1, 0x7f, 0x57, 0xc0, 0x58, 0x24, 0x25, 0x47, 0x92, 0xee, 0x40, 0x27, 0x4a,
+	0x12, 0x4d, 0x52, 0xd9, 0x58, 0x6a, 0x47, 0x58, 0x72, 0x12, 0x68, 0xca, 0xf9, 0xbe, 0x97, 0x40,
+	0xd3, 0x2a, 0xee, 0x7f, 0x2b, 0xa2, 0xe9, 0x48, 0xa8, 0x40, 0xfe, 0x1d, 0x03, 0xff, 0x50, 0xe0,
+	0xe9, 0x85, 0x82, 0xfe, 0xff, 0xa9, 0x7a, 0xce, 0x7f, 0xdc, 0x41, 0xf6, 0x09, 0xb2, 0x5f, 0xf1,
+	0x43, 0x15, 0xc3, 0xcf, 0x70, 0x36, 0x1a, 0xcd, 0xfb, 0x53, 0xd3, 0x36, 0x47, 0x04, 0x36, 0xe0,
+	0xa1, 0x5b, 0xde, 0x88, 0xf1, 0xa1, 0x1f, 0x6a, 0xb8, 0xc9, 0x39, 0xea, 0xfc, 0x19, 0x68, 0x3b,
+	0x78, 0xf1, 0x3e, 0x1b, 0x54, 0xeb, 0xbd, 0x96, 0xc3, 0x8a, 0x24, 0xb9, 0xd3, 0xfb, 0x6c, 0x36,
+	0x75, 0x2d, 0xf2, 0xfa, 0x50, 0xc6, 0xb9, 0xf3, 0x04, 0xd9, 0x77, 0xf0, 0x98, 0x71, 0x9f, 0xbe,
+	0x56, 0xb3, 0x7d, 0x69, 0x59, 0x5c, 0x61, 0x71, 0x7b, 0x1a, 0xd7, 0xe8, 0x55, 0x16, 0x34, 0x7a,
+	0xe9, 0x22, 0xf9, 0x85, 0xe4, 0x9e, 0x1f, 0x2b, 0xf4, 0x0d, 0x7a, 0x35, 0xca, 0x2f, 0xec, 0xf4,
+	0x62, 0x69, 0x51, 0x45, 0xb4, 0x88, 0x90, 0x15, 0x42, 0xcb, 0x5b, 0xf4, 0x7d, 0xba, 0x60, 0x56,
+	0x3c, 0xa5, 0x45, 0x82, 0x0b, 0x51, 0xfa, 0x35, 0xfc, 0x12, 0xbc, 0x12, 0x8d, 0x8d, 0x3f, 0xfa,
+	0x4f, 0xc5, 0x2b, 0xd3, 0xea, 0x16, 0xb4, 0x08, 0x00, 0x66, 0x9b, 0x35, 0x76, 0x3f, 0x97, 0x12,
+	0x01, 0x23, 0x78, 0x9a, 0x88, 0xf9, 0x8b, 0x84, 0x3f, 0xf6, 0x03, 0xf9, 0xdb, 0xed, 0x9f, 0xfc,
+	0xf0, 0xc7, 0x4d, 0xce, 0x51, 0xdd, 0x1e, 0xb4, 0x23, 0xea, 0xd2, 0x88, 0x9f, 0x49, 0xdf, 0x16,
+	0xab, 0xaf, 0xb3, 0xfb, 0xd1, 0x36, 0xac, 0xc7, 0xfe, 0x4b, 0x4b, 0xed, 0x3e, 0x74, 0xfc, 0xf6,
+	0xd9, 0x3e, 0xcd, 0x6e, 0xda, 0x5e, 0x8a, 0x10, 0x61, 0xd7, 0xaa, 0x7e, 0x29, 0xe3, 0x2c, 0xc2,
+	0xd6, 0x7d, 0xe8, 0xcc, 0x70, 0x14, 0x90, 0x97, 0x2f, 0x6c, 0x0f, 0x4d, 0x95, 0x9f, 0xd0, 0x9d,
+	0x79, 0x1f, 0x3a, 0x7e, 0x73, 0xaf, 0xbc, 0x7c, 0x61, 0xbf, 0x65, 0xaa, 0xfc, 0x84, 0x86, 0xc9,
+	0x19, 0x34, 0xef, 0x21, 0x37, 0x14, 0x7e, 0x21, 0x65, 0x99, 0x78, 0xff, 0xa3, 0xbe, 0x9b, 0x65,
+	0x0a, 0x11, 0xfb, 0x36, 0xb4, 0x19, 0xb1, 0x16, 0x72, 0xb4, 0x8b, 0xd2, 0xab, 0x84, 0xfd, 0x87,
+	0xfa, 0x5e, 0xb6, 0x49, 0x44, 0xf8, 0xf7, 0x14, 0xd8, 0x60, 0x95, 0xa6, 0x0d, 0x73, 0xda, 0xb3,
+	0xf2, 0x9a, 0x44, 0x7b, 0x04, 0xf5, 0xfd, 0x25, 0x66, 0x12, 0x34, 0xef, 0x2a, 0xf0, 0x18, 0xd9,
+	0x02, 0xec, 0x4b, 0x98, 0x76, 0x45, 0xca, 0xa1, 0xe3, 0x8d, 0x46, 0xfa, 0xb3, 0xd9, 0x27, 0x32,
+	0x50, 0xc8, 0x6e, 0xc8, 0x04, 0x25, 0xa9, 0x21, 0x2e, 0x15, 0x4a, 0x72, 0x7b, 0x9a, 0x07, 0x85,
+	0x6c, 0x8c, 0x4c, 0x50, 0x92, 0xba, 0xce, 0x52, 0xa1, 0x24, 0xf7, 0x8b, 0xbd, 0x03, 0xa7, 0x3c,
+	0x6f, 0x89, 0xc0, 0x90, 0x70, 0x3c, 0x01, 0x86, 0x4b, 0x19, 0x67, 0x11, 0x00, 0xdf, 0x56, 0x60,
+	0x9d, 0x47, 0xe0, 0x68, 0xd9, 0x16, 0x0b, 0xb6, 0xcc, 0xe5, 0xac, 0xd3, 0x42, 0x16, 0x88, 0x97,
+	0x06, 0xb5, 0x26, 0xc9, 0x48, 0xcd, 0x75, 0x84, 0x48, 0x46, 0xea, 0x58, 0xb7, 0xc7, 0x3b, 0x70,
+	0x8a, 0xf8, 0xa6, 0x3c, 0x00, 0x61, 0x47, 0x92, 0x64, 0xa8, 0x16, 0x01, 0x20, 0x1e, 0x29, 0x0f,
+	0x40, 0xd8, 0xfe, 0x23, 0x19, 0xab, 0x63, 0x00, 0x4e, 0xa0, 0xe5, 0xb9, 0x41, 0x28, 0x5d, 0x22,
+	0x58, 0xf3, 0xa2, 0x77, 0xb3, 0x4c, 0x21, 0x72, 0xe7, 0x7e, 0xb0, 0x0e, 0x9b, 0x49, 0xb4, 0x0c,
+	0xab, 0x04, 0x8e, 0x77, 0x31, 0xd3, 0x9c, 0x30, 0x4f, 0x44, 0x63, 0x63, 0x6a, 0x9e, 0x10, 0x75,
+	0xaa, 0xe8, 0x7b, 0xd9, 0x26, 0x85, 0xc2, 0xa3, 0xd1, 0x30, 0x55, 0xb8, 0xa8, 0x09, 0x43, 0xdf,
+	0xcb, 0x36, 0x29, 0x14, 0x1e, 0x8d, 0x7f, 0xa9, 0xc2, 0x45, 0x8d, 0x06, 0xfa, 0x5e, 0xb6, 0x49,
+	0x44, 0xb8, 0x0d, 0x0d, 0x26, 0xe0, 0x68, 0x5f, 0x94, 0x8e, 0x19, 0x54, 0xec, 0x85, 0x0c, 0x33,
+	0xa2, 0x27, 0x11, 0xfa, 0xce, 0xac, 0xc9, 0x2f, 0xe1, 0x64, 0x70, 0xee, 0xd8, 0xb3, 0x7a, 0xe8,
+	0x61, 0xa4, 0x5c, 0x27, 0xe9, 0x61, 0xd1, 0x0a, 0xa1, 0xa4, 0x87, 0xf1, 0x05, 0xbf, 0xd0, 0xc3,
+	0x64, 0x85, 0x8b, 0x1e, 0x8f, 0x25, 0x3d, 0x4c, 0x20, 0x9c, 0x78, 0x98, 0xac, 0x70, 0xd1, 0x23,
+	0xab, 0xa4, 0x87, 0xf1, 0xc2, 0x89, 0x87, 0x51, 0xc9, 0x12, 0x1e, 0xc6, 0x89, 0xbd, 0x90, 0x61,
+	0x46, 0xd4, 0xc3, 0xe8, 0x23, 0x9c, 0x26, 0xbf, 0x44, 0x16, 0x0f, 0x8b, 0xbd, 0x39, 0x7e, 0x5f,
+	0x81, 0x4d, 0x9a, 0x3a, 0x23, 0x75, 0x34, 0x6d, 0x5f, 0x2e, 0x13, 0x0a, 0x2a, 0xf7, 0xfa, 0x73,
+	0xcb, 0x4c, 0x65, 0x00, 0xd1, 0x54, 0x9a, 0x0d, 0x50, 0xf2, 0x53, 0x58, 0x2a, 0xa0, 0x45, 0x4f,
+	0x40, 0x1e, 0x20, 0x9a, 0x5a, 0xb3, 0x01, 0x4a, 0x7e, 0xda, 0x49, 0x05, 0xb4, 0xe8, 0x41, 0xe6,
+	0xbb, 0x0a, 0x68, 0x38, 0xe5, 0x45, 0xd1, 0x48, 0x9c, 0x9d, 0x84, 0x50, 0xae, 0x64, 0x9e, 0x47,
+	0x70, 0xfc, 0x56, 0x81, 0x4f, 0xc5, 0x71, 0x38, 0xfd, 0xbb, 0xf3, 0x60, 0xe7, 0x5c, 0xcd, 0xb8,
+	0x76, 0xec, 0x71, 0x43, 0x7f, 0xfe, 0x01, 0x56, 0x48, 0xc7, 0x49, 0x73, 0xc8, 0x12, 0x38, 0xb9,
+	0x9c, 0xf2, 0xfc, 0x03, 0xac, 0x40, 0x70, 0xfe, 0x4e, 0x81, 0xb3, 0x09, 0x38, 0x83, 0x1b, 0xf0,
+	0x12, 0x62, 0xf8, 0x1b, 0xf1, 0xb5, 0x07, 0x59, 0x82, 0x73, 0xc1, 0x68, 0x19, 0x5a, 0xc6, 0x05,
+	0x45, 0x25, 0x75, 0x19, 0x17, 0x14, 0x57, 0xd3, 0xbd, 0xcb, 0x32, 0x89, 0x5e, 0x91, 0x92, 0x90,
+	0x26, 0x77, 0xcd, 0x14, 0x94, 0xfb, 0xf4, 0xfd, 0x25, 0x66, 0x32, 0x68, 0x48, 0xe8, 0xca, 0x86,
+	0x26, 0xb1, 0x08, 0xad, 0xef, 0x2f, 0x31, 0x93, 0x41, 0x43, 0xe2, 0x56, 0x36, 0x34, 0x89, 0xc5,
+	0x5f, 0x7d, 0x7f, 0x89, 0x99, 0xdc, 0x35, 0x31, 0x0a, 0x45, 0xe2, 0x9a, 0x28, 0xc2, 0x71, 0x39,
+	0xeb, 0x34, 0xce, 0x6d, 0xa3, 0xe5, 0x43, 0x2d, 0xe3, 0x72, 0x4e, 0x06, 0xb7, 0x15, 0x56, 0x41,
+	0xaf, 0x9d, 0x7b, 0x6d, 0x9d, 0x7e, 0x1c, 0x6c, 0xf6, 0x0f, 0x4b, 0xf1, 0x02, 0xe4, 0xdd, 0x35,
+	0xfc, 0x3f, 0x6e, 0xbb, 0xf8, 0xbf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xb9, 0xf4, 0xcd, 0xc1, 0x06,
+	0x4e, 0x00, 0x00,
 }

@@ -90,6 +90,16 @@ service MServiceInventory {
     rpc get_inventory_items_by_facility (GetInventoryItemsByFacilityRequest) returns (GetInventoryItemsByFacilityResponse);
     // get current server version and uptime - health check
     rpc get_server_version (GetServerVersionRequest) returns (GetServerVersionResponse);
+    // create an entity schema
+    rpc create_entity_schema (CreateEntitySchemaRequest) returns (CreateEntitySchemaResponse);
+    // update an entity schema
+    rpc update_entity_schema (UpdateEntitySchemaRequest) returns (UpdateEntitySchemaResponse);
+    // delete an entity schema
+    rpc delete_entity_schema (DeleteEntitySchemaRequest) returns (DeleteEntitySchemaResponse);
+    // get an entity schema by name
+    rpc get_entity_schema (GetEntitySchemaRequest) returns (GetEntitySchemaResponse);
+    // get all entity schemas for account
+    rpc get_entity_schemas (GetEntitySchemasRequest) returns (GetEntitySchemasResponse);
   
 }
 
@@ -113,6 +123,8 @@ message Facility {
     int64 mservice_id = 7;
     // facility name
     string facility_name = 8;
+    // data for entity ui extensions
+    string json_data = 9;
 
 }
 
@@ -134,8 +146,10 @@ message FacilityWrapper {
     int64 mservice_id = 7;
     // facility name
     string facility_name = 8;
+    // data for entity ui extensions
+    string json_data = 9;
     // list of child subarea wrappers
-    repeated SubareaWrapper child_subareas = 9;
+    repeated SubareaWrapper child_subareas = 10;
 
 }
 
@@ -211,6 +225,8 @@ message Subarea {
     string subarea_type_name = 13;
     // subarea name
     string subarea_name = 14;
+    // data for entity ui extensions
+    string json_data = 15;
 
 }
 
@@ -244,8 +260,10 @@ message SubareaWrapper {
     string subarea_type_name = 13;
     // subarea name
     string subarea_name = 14;
+    // data for entity ui extensions
+    string json_data = 15;
     // list of child subarea wrappers
-    repeated SubareaWrapper child_subareas = 15;
+    repeated SubareaWrapper child_subareas = 16;
 
 }
 
@@ -271,6 +289,8 @@ message Product {
     string product_name = 9;
     // entity comment
     string comment = 10;
+    // data for entity ui extensions
+    string json_data = 11;
 
 }
 
@@ -304,6 +324,29 @@ message InventoryItem {
     int64 product_id = 13;
     // product name
     string product_name = 14;
+    // data for entity ui extensions
+    string json_data = 15;
+
+}
+
+// MService inventory extension schema
+message EntitySchema {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // name of entity to be extended
+    string entity_name = 2;
+    // creation date
+    dml.DateTime created = 3;
+    // modification date
+    dml.DateTime modified = 4;
+    // deletion date
+    dml.DateTime deleted = 5;
+    // has record been deleted?
+    bool is_deleted = 6;
+    // version of this record
+    int32 version = 7;
+    // schema for json_data extensions
+    string json_schema = 8;
 
 }
 
@@ -313,6 +356,8 @@ message CreateFacilityRequest {
     int64 mservice_id = 1;
     // facility name
     string facility_name = 2;
+    // data for entity ui extensions
+    string json_data = 3;
 
 }
 
@@ -339,6 +384,8 @@ message UpdateFacilityRequest {
     int32 version = 3;
     // facility name
     string facility_name = 4;
+    // data for entity ui extensions
+    string json_data = 5;
 
 }
 
@@ -659,6 +706,8 @@ message CreateSubareaRequest {
     int32 subarea_type_id = 5;
     // subarea name
     string subarea_name = 6;
+    // data for entity ui extensions
+    string json_data = 7;
 
 }
 
@@ -691,6 +740,8 @@ message UpdateSubareaRequest {
     int32 subarea_type_id = 6;
     // subarea name
     string subarea_name = 7;
+    // data for entity ui extensions
+    string json_data = 8;
 
 }
 
@@ -777,6 +828,8 @@ message CreateProductRequest {
     string product_name = 3;
     // entity comment
     string comment = 4;
+    // data for entity ui extensions
+    string json_data = 5;
 
 }
 
@@ -807,6 +860,8 @@ message UpdateProductRequest {
     string product_name = 5;
     // entity comment
     string comment = 6;
+    // data for entity ui extensions
+    string json_data = 7;
 
 }
 
@@ -895,6 +950,8 @@ message CreateInventoryItemRequest {
     string serial_number = 5;
     // inventory product identifier
     int64 product_id = 6;
+    // data for entity ui extensions
+    string json_data = 7;
 
 }
 
@@ -929,6 +986,8 @@ message UpdateInventoryItemRequest {
     string serial_number = 7;
     // inventory product identifier
     int64 product_id = 8;
+    // data for entity ui extensions
+    string json_data = 9;
 
 }
 
@@ -1062,6 +1121,112 @@ message GetServerVersionResponse {
     string server_version = 3;
     // server uptime in seconds
     int64 server_uptime = 4;
+
+}
+
+// request parameters for method create_entity_schema
+message CreateEntitySchemaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // name of entity to be extended
+    string entity_name = 2;
+    // schema for json_data extensions
+    string json_schema = 3;
+
+}
+
+// response parameters for method create_entity_schema
+message CreateEntitySchemaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method update_entity_schema
+message UpdateEntitySchemaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // name of entity to be extended
+    string entity_name = 2;
+    // version of this record
+    int32 version = 3;
+    // schema for json_data extensions
+    string json_schema = 4;
+
+}
+
+// response parameters for method update_entity_schema
+message UpdateEntitySchemaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method delete_entity_schema
+message DeleteEntitySchemaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // name of entity to be extended
+    string entity_name = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// response parameters for method delete_entity_schema
+message DeleteEntitySchemaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // version of this record
+    int32 version = 3;
+
+}
+
+// request parameters for method get_entity_schema
+message GetEntitySchemaRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+    // name of entity to be extended
+    string entity_name = 2;
+
+}
+
+// response parameters for method get_entity_schema
+message GetEntitySchemaResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // single entity schema object
+    EntitySchema entity_schema = 3;
+
+}
+
+// request parameters for method get_entity_schemas
+message GetEntitySchemasRequest {
+    // mservice account identifier
+    int64 mservice_id = 1;
+
+}
+
+// response parameters for method get_entity_schemas
+message GetEntitySchemasResponse {
+    // method result code
+    int32 error_code = 1;
+    // text error message
+    string error_message = 2;
+    // list of  entity schema objects
+    repeated EntitySchema entity_schemas = 3;
 
 }
 

@@ -15,8 +15,14 @@
 package main
 
 import (
-	"context"
+	"bytes"
+	// "context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"io"
+	"net/http"
+	"time"
 
 	"fmt"
 	"io/ioutil"
@@ -28,10 +34,6 @@ import (
 
 	pb "github.com/gaterace/inventory/pkg/mserviceinventory"
 	"github.com/kylelemons/go-gypsy/yaml"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-	"google.golang.org/grpc/grpclog"
-	"google.golang.org/grpc/metadata"
 
 	flag "github.com/juju/gnuflag"
 )
@@ -72,10 +74,11 @@ func main() {
 
 	// log_file, _ := config.Get("log_file")
 	ca_file, _ := config.Get("ca_file")
-	tls, _ := config.GetBool("tls")
+	useTls, _ := config.GetBool("tls")
 	server_host_override, _ := config.Get("server_host_override")
 	server, _ := config.Get("server")
 	port, _ := config.GetInt("port")
+	rest_port, _ := config.GetInt("rest_port")
 
 	if port == 0 {
 		port = 50055
@@ -383,7 +386,7 @@ func main() {
 			validParams = false
 		}
 		if *quantity == -1 {
-			fmt.Println("itemtype parameter missing")
+			fmt.Println("quantity parameter missing")
 			validParams = false
 		}
 		if *product == -1 {
@@ -465,9 +468,17 @@ func main() {
 			fmt.Println("json_schema parameter missing")
 			validParams = false
 		}
+		if *version == -1 {
+			fmt.Println("version parameter missing")
+			validParams = false
+		}
 	case "delete_entity_schema":
 		if *entity_name == "" {
 			fmt.Println("entity_name parameter missing")
+			validParams = false
+		}
+		if *version == -1 {
+			fmt.Println("version parameter missing")
 			validParams = false
 		}
 	case "get_entity_schema":
@@ -498,41 +509,15 @@ func main() {
 		tokenFilename = homeDir + string(os.PathSeparator) + ".mservice.token"
 	}
 
-	address := server + ":" + strconv.Itoa(int(port))
+	var serverAddr string
+
+	if useTls {
+		serverAddr = "https://" + server + ":" + strconv.Itoa(int(rest_port))
+	} else {
+		serverAddr = "http://" + server + ":" + strconv.Itoa(int(rest_port))
+	}
 	// fmt.Printf("address: %s\n", address)
 
-	var opts []grpc.DialOption
-	if tls {
-		var sn string
-		if server_host_override != "" {
-			sn = server_host_override
-		}
-		var creds credentials.TransportCredentials
-		if ca_file != "" {
-			var err error
-			creds, err = credentials.NewClientTLSFromFile(ca_file, sn)
-			if err != nil {
-				grpclog.Fatalf("Failed to create TLS credentials %v", err)
-			}
-		} else {
-			creds = credentials.NewClientTLSFromCert(nil, sn)
-		}
-		opts = append(opts, grpc.WithTransportCredentials(creds))
-	} else {
-		opts = append(opts, grpc.WithInsecure())
-	}
-
-	// set up connection to server
-	conn, err := grpc.Dial(address, opts...)
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-
-	defer conn.Close()
-
-	client := pb.NewMServiceInventoryClient(conn)
-
-	ctx := context.Background()
 
 	savedToken := ""
 
@@ -542,16 +527,63 @@ func main() {
 		savedToken = string(data)
 	}
 
-	md := metadata.Pairs("token", savedToken)
-	mctx := metadata.NewOutgoingContext(ctx, md)
+
+
+	bearer := "Bearer " + savedToken
+	// fmt.Println(bearer)
+
+	var client *http.Client
+
+	if useTls {
+		rootCAs, _ := x509.SystemCertPool()
+		if rootCAs == nil {
+			rootCAs = x509.NewCertPool()
+		}
+
+		if ca_file != "" {
+			// Read in the cert file
+			certs, err := ioutil.ReadFile(ca_file)
+			if err != nil {
+				log.Fatalf("Failed to append %q to RootCAs: %v", ca_file, err)
+			}
+
+			// Append our cert to the system pool
+			if ok := rootCAs.AppendCertsFromPEM(certs); !ok {
+				log.Println("No certs appended, using system certs only")
+			}
+		}
+
+		config := &tls.Config{}
+		config.RootCAs = rootCAs
+		config.ServerName = server_host_override
+
+		tr := &http.Transport{TLSClientConfig: config}
+		client = &http.Client{
+			Transport: tr,
+			Timeout: time.Second * 10,
+		}
+
+
+	} else {
+		client = &http.Client{
+			Timeout: time.Second * 10,
+		}
+	}
+
 
 	switch cmd {
 	case "create_facility":
 		req := pb.CreateFacilityRequest{}
 		req.FacilityName = *name
 		req.JsonData = *json_data
-		resp, err := client.CreateFacility(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/facility"
+		doMuxRequest(url, bearer, client, "POST", json)
+
 
 	case "update_facility":
 		req := pb.UpdateFacilityRequest{}
@@ -559,98 +591,102 @@ func main() {
 		req.Version = int32(*version)
 		req.FacilityName = *name
 		req.JsonData = *json_data
-		resp, err := client.UpdateFacility(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/facility/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
 
 	case "delete_facility":
-		req := pb.DeleteFacilityRequest{}
-		req.FacilityId = *id
-		req.Version = int32(*version)
-		resp, err := client.DeleteFacility(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/facility/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_facility":
-		req := pb.GetFacilityRequest{}
-		req.FacilityId = *id
-		resp, err := client.GetFacility(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/facility/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_facilities":
-		req := pb.GetFacilitiesRequest{}
-		resp, err := client.GetFacilities(mctx, &req)
-		printResponse(resp, err)
-
+		url := fmt.Sprintf("%s/api/facilities", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
 	case "get_facility_wrapper":
-		req := pb.GetFacilityWrapperRequest{}
-		req.FacilityId = *id
-		resp, err := client.GetFacilityWrapper(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/facility/wrapper/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_subarea_type":
 		req := pb.CreateSubareaTypeRequest{}
 		req.SubareaTypeId = int32(*id)
 		req.SubareaTypeName = *name
-		resp, err := client.CreateSubareaType(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/subareatype"
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_subarea_type":
 		req := pb.UpdateSubareaTypeRequest{}
 		req.SubareaTypeId = int32(*id)
 		req.SubareaTypeName = *name
 		req.Version = int32(*version)
-		resp, err := client.UpdateSubareaType(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/subareatype/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
 
 	case "delete_subarea_type":
-		req := pb.DeleteSubareaTypeRequest{}
-		req.SubareaTypeId = int32(*id)
-		req.Version = int32(*version)
-		resp, err := client.DeleteSubareaType(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subareatype/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_subarea_type":
-		req := pb.GetSubareaTypeRequest{}
-		req.SubareaTypeId = int32(*id)
-		resp, err := client.GetSubareaType(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subareatype/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_subarea_types":
-		req := pb.GetSubareaTypesRequest{}
-		resp, err := client.GetSubareaTypes(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subareatypes", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_item_type":
 		req := pb.CreateItemTypeRequest{}
 		req.ItemTypeId = int32(*id)
 		req.ItemTypeName = *name
-		resp, err := client.CreateItemType(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/itemtype"
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_item_type":
 		req := pb.UpdateItemTypeRequest{}
 		req.ItemTypeId = int32(*id)
 		req.ItemTypeName = *name
 		req.Version = int32(*version)
-		resp, err := client.UpdateItemType(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/itemtype/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
 
 	case "delete_item_type":
-		req := pb.DeleteItemTypeRequest{}
-		req.ItemTypeId = int32(*id)
-		req.Version = int32(*version)
-		resp, err := client.DeleteItemType(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/itemtype/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_item_type":
-		req := pb.GetItemTypeRequest{}
-		req.ItemTypeId = int32(*id)
-		resp, err := client.GetItemType(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/itemtype/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_item_types":
-		req := pb.GetItemTypesRequest{}
-		resp, err := client.GetItemTypes(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/itemtypes", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_subarea":
 		req := pb.CreateSubareaRequest{}
@@ -660,8 +696,13 @@ func main() {
 		req.SubareaTypeId = int32(*subtype)
 		req.SubareaName = *name
 		req.JsonData = *json_data
-		resp, err := client.CreateSubarea(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/subarea"
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_subarea":
 		req := pb.UpdateSubareaRequest{}
@@ -672,27 +713,25 @@ func main() {
 		req.SubareaTypeId = int32(*subtype)
 		req.SubareaName = *name
 		req.JsonData = *json_data
-		resp, err := client.UpdateSubarea(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/subarea/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
 
 	case "delete_subarea":
-		req := pb.DeleteSubareaRequest{}
-		req.SubareaId = *id
-		req.Version = int32(*version)
-		resp, err := client.DeleteSubarea(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subarea/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_subarea":
-		req := pb.GetSubareaRequest{}
-		req.SubareaId = *id
-		resp, err := client.GetSubarea(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subarea/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_subareas":
-		req := pb.GetSubareasRequest{}
-		req.FacilityId = *facility
-		resp, err := client.GetSubareas(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/subareas/%d", serverAddr, *facility)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_product":
 		req := pb.CreateProductRequest{}
@@ -700,8 +739,13 @@ func main() {
 		req.ProductName = *name
 		req.Comment = *comment
 		req.JsonData = *json_data
-		resp, err := client.CreateProduct(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/product"
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_product":
 		req := pb.UpdateProductRequest{}
@@ -711,26 +755,26 @@ func main() {
 		req.ProductName = *name
 		req.Comment = *comment
 		req.JsonData = *json_data
-		resp, err := client.UpdateProduct(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/product/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
+
 
 	case "delete_product":
-		req := pb.DeleteProductRequest{}
-		req.ProductId = *id
-		req.Version = int32(*version)
-		resp, err := client.DeleteProduct(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/product/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_product":
-		req := pb.GetProductRequest{}
-		req.ProductId = *id
-		resp, err := client.GetProduct(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/product/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_products":
-		req := pb.GetProductsRequest{}
-		resp, err := client.GetProducts(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/products", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_item":
 		req := pb.CreateInventoryItemRequest{}
@@ -740,8 +784,13 @@ func main() {
 		req.SerialNumber = *serial
 		req.ProductId = *product
 		req.JsonData = *json_data
-		resp, err := client.CreateInventoryItem(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := serverAddr + "/api/item"
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_item":
 		req := pb.UpdateInventoryItemRequest{}
@@ -753,149 +802,98 @@ func main() {
 		req.SerialNumber = *serial
 		req.ProductId = *product
 		req.JsonData = *json_data
-		resp, err := client.UpdateInventoryItem(mctx, &req)
-		printResponse(resp, err)
+		json, err := requestToJson(req)
+		if err != nil {
+			fmt.Printf("err: %s\n", err)
+			break
+		}
+		url := fmt.Sprintf("%s/api/item/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "PUT", json)
+
 
 	case "delete_item":
-		req := pb.DeleteInventoryItemRequest{}
-		req.InventoryItemId = *id
-		req.Version = int32(*version)
-		resp, err := client.DeleteInventoryItem(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/item/%d/%d", serverAddr, *id, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
 	case "get_item":
-		req := pb.GetInventoryItemRequest{}
-		req.InventoryItemId = *id
-		resp, err := client.GetInventoryItem(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/item/id/%d", serverAddr, *id)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_items_by_product":
-		req := pb.GetInventoryItemsByProductRequest{}
-		req.ProductId = *product
-		resp, err := client.GetInventoryItemsByProduct(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/items/product/%d", serverAddr, *product)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_items_by_subarea":
-		req := pb.GetInventoryItemsBySubareaRequest{}
-		req.SubareaId = *subarea
-		resp, err := client.GetInventoryItemsBySubarea(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/items/subarea/%d", serverAddr, *subarea)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_items_by_facility":
-		req := pb.GetInventoryItemsByFacilityRequest{}
-		req.FacilityId = *facility
-		resp, err := client.GetInventoryItemsByFacility(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/items/facility/%d", serverAddr, *facility)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "create_entity_schema":
 		req := pb.CreateEntitySchemaRequest{}
 		req.EntityName = *entity_name
 		req.JsonSchema = *json_data
-		resp, err := client.CreateEntitySchema(mctx, &req)
-		if err == nil {
-			jtext, err := json.MarshalIndent(resp, "", "  ")
-			if err == nil {
-				fmt.Println(string(jtext))
-			}
-		}
-
+		json, err := requestToJson(req)
 		if err != nil {
 			fmt.Printf("err: %s\n", err)
+			break
 		}
+
+		url := fmt.Sprintf("%s/api/schema", serverAddr)
+		doMuxRequest(url, bearer, client, "POST", json)
 
 	case "update_entity_schema":
-		req1 := pb.GetEntitySchemaRequest{}
-		req1.EntityName = *entity_name
-		resp1, err := client.GetEntitySchema(mctx, &req1)
-		if err == nil {
-			if resp1.GetErrorCode() == 0 {
-				req2 := pb.UpdateEntitySchemaRequest{}
-				req2.EntityName = *entity_name
-				req2.Version = resp1.GetEntitySchema().GetVersion()
-				req2.JsonSchema = *json_data
-				resp2, err := client.UpdateEntitySchema(mctx, &req2)
-				if err == nil {
-					jtext, err := json.MarshalIndent(resp2, "", "  ")
-					if err == nil {
-						fmt.Println(string(jtext))
-					}
-				}
-
-			} else {
-				jtext, err := json.MarshalIndent(resp1, "", "  ")
-				if err == nil {
-					fmt.Println(string(jtext))
-				}
-			}
-
-		}
+		req := pb.UpdateEntitySchemaRequest{}
+		req.EntityName = *entity_name
+		req.Version = int32(*version)
+		req.JsonSchema = *json_data
+		json, err := requestToJson(req)
 		if err != nil {
 			fmt.Printf("err: %s\n", err)
+			break
 		}
+
+		url := fmt.Sprintf("%s/api/schema/%s", serverAddr, *entity_name)
+		doMuxRequest(url, bearer, client, "PUT", json)
 
 	case "delete_entity_schema":
-		req1 := pb.GetEntitySchemaRequest{}
-		req1.EntityName = *entity_name
-		resp1, err := client.GetEntitySchema(mctx, &req1)
-		if err == nil {
-			if resp1.GetErrorCode() == 0 {
-				req2 := pb.DeleteEntitySchemaRequest{}
-				req2.EntityName = *entity_name
-				req2.Version = resp1.GetEntitySchema().GetVersion()
-				resp2, err := client.DeleteEntitySchema(mctx, &req2)
-				if err == nil {
-					jtext, err := json.MarshalIndent(resp2, "", "  ")
-					if err == nil {
-						fmt.Println(string(jtext))
-					}
-				}
+		url := fmt.Sprintf("%s/api/schema/%s/%d", serverAddr, *entity_name, *version)
+		doMuxRequest(url, bearer, client, "DELETE", nil)
 
-			} else {
-				jtext, err := json.MarshalIndent(resp1, "", "  ")
-				if err == nil {
-					fmt.Println(string(jtext))
-				}
-			}
-
-		}
-
-		if err != nil {
-			fmt.Printf("err: %s\n", err)
-		}
 	case "get_entity_schema":
-		req := pb.GetEntitySchemaRequest{}
-		req.EntityName = *entity_name
-		resp, err := client.GetEntitySchema(mctx, &req)
-		if err == nil {
-			jtext, err := json.MarshalIndent(resp, "", "  ")
-			if err == nil {
-				fmt.Println(string(jtext))
-			}
-		}
+		url := fmt.Sprintf("%s/api/schema/%s", serverAddr, *entity_name)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
-		if err != nil {
-			fmt.Printf("err: %s\n", err)
-		}
 	case "get_entity_schemas":
-		req := pb.GetEntitySchemasRequest{}
-		resp, err := client.GetEntitySchemas(mctx, &req)
-		if err == nil {
-			jtext, err := json.MarshalIndent(resp, "", "  ")
-			if err == nil {
-				fmt.Println(string(jtext))
-			}
-		}
-
-		if err != nil {
-			fmt.Printf("err: %s\n", err)
-		}
-
+		url := fmt.Sprintf("%s/api/schemas", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
 
 	case "get_server_version":
-		req := pb.GetServerVersionRequest{}
-		resp, err := client.GetServerVersion(mctx, &req)
-		printResponse(resp, err)
+		url := fmt.Sprintf("%s/api/server/version", serverAddr)
+		doMuxRequest(url, bearer, client, "GET", nil)
+	}
 
+}
+
+func doMuxRequest(url string, bearer string, client *http.Client, verb string, body io.Reader) {
+	httpReq, err := http.NewRequest(verb, url, body)
+	if err != nil {
+		fmt.Printf("err: %s\n", err)
+		return
+	}
+
+	httpReq.Header.Set("Authorization", bearer)
+	if body != nil {
+		httpReq.Header.Set("Content-Type", "application/json")
+	}
+	resp, err := client.Do(httpReq)
+	if err == nil {
+		respBody, _ :=  ioutil.ReadAll(resp.Body)
+		fmt.Println(string(respBody))
+	} else {
+		fmt.Printf("err: %s\n", err)
 	}
 
 }
@@ -911,4 +909,11 @@ func printResponse(resp interface{}, err error) {
 	if err != nil {
 		fmt.Printf("err: %s\n", err)
 	}
+}
+
+func requestToJson(req interface{}) (*bytes.Buffer, error) {
+	jtext, err := json.Marshal(req)
+	// fmt.Printf("json: %s\n", string(jtext))
+	buf := bytes.NewBuffer(jtext)
+	return buf, err
 }

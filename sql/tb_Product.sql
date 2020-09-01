@@ -26,6 +26,8 @@ CREATE TABLE tb_Product
     chvProductName VARCHAR(255) NOT NULL,
     -- entity comment
     chvComment VARCHAR(255) NOT NULL,
+    -- data for entity ui extensions
+    chvJsonData VARCHAR(8000) NOT NULL,
 
 
     PRIMARY KEY (inbProductId),
