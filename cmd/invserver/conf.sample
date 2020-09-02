@@ -10,6 +10,10 @@ cert_file: < cert.pem location >
 key_file: < key.pem location >
 # host port for communication
 port: 50055
+# set to different non-zero port for http rest support
+rest_port: 0
+# if using http rest support and need CORS support as well, provide comma separated list of origins
+# cors_origin: http://localhost:8080
 # mysql user for connection
 db_user: myuser
 # mysql user password for connection
