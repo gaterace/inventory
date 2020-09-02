@@ -115,6 +115,10 @@ of the inventory_item is defined by **inventory_item_type**.
 A **product** defines a potential product with sku, name, etc.  A product does not need to have any
 inventory items (out of stock) but an inventory item must be associated with a product.  
 
+## Extending the Data Model ##
+
+As of v0.9.4, the data model can be extended without changing the base data model or server code. There are four entities that have an added (optional) attribute, **json_data**. These entities are **facility, product, subarea and inventory_item**. The contents of this attribute are user defined. To assist in this extension, a new entity has been added : **entity_schema** . This maps an arbitrary schema (defined as json) to an existing entity name.
+
 ## Server
 
 To build the server:
