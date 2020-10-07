@@ -13,7 +13,7 @@
 
 syntax = "proto3";
 
-package org.gaterace.mservice.project;
+package org.gaterace.mservice.inventory;
 option csharp_namespace = "MServiceInventory";
 option go_package = "mserviceinventory";
 
