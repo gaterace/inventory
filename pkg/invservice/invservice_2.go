@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Demian Harvill
+// Copyright 2019-2021 Demian Harvill
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -1027,7 +1027,7 @@ func (s *invService) GetServerVersion(ctx context.Context, req *pb.GetServerVers
 	resp := &pb.GetServerVersionResponse{}
 
 	currentSecs := time.Now().Unix()
-	resp.ServerVersion = "v0.9.4"
+	resp.ServerVersion = "v0.9.5"
 	resp.ServerUptime = currentSecs - s.startSecs
 
 	return resp, nil
@@ -1094,7 +1094,7 @@ func (s *invService) UpdateEntitySchema(ctx context.Context, req *pb.UpdateEntit
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(req.GetVersion() + 1, req.GetJsonSchema(), req.GetMserviceId(), entityName, req.GetVersion())
+	_, err = stmt.Exec(req.GetVersion()+1, req.GetJsonSchema(), req.GetMserviceId(), entityName, req.GetVersion())
 
 	if err == nil {
 		resp.Version = req.GetVersion() + 1
@@ -1128,7 +1128,7 @@ func (s *invService) DeleteEntitySchema(ctx context.Context, req *pb.DeleteEntit
 
 	defer stmt.Close()
 
-	_, err = stmt.Exec(req.GetVersion() + 1, req.GetMserviceId(), entityName, req.GetVersion())
+	_, err = stmt.Exec(req.GetVersion()+1, req.GetMserviceId(), entityName, req.GetVersion())
 
 	if err == nil {
 		resp.Version = req.GetVersion() + 1
