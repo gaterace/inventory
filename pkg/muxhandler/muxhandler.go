@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Demian Harvill
+// Copyright 2019-2022 Demian Harvill
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
@@ -32,7 +32,7 @@ import (
 
 type muxHandler struct {
 	auth *invauth.InvAuth
-	rtr *mux.Router
+	rtr  *mux.Router
 }
 
 // Create aa new muxHandler struct
@@ -300,7 +300,6 @@ func (mh *muxHandler) DeleteSubareaTypeHandler(w http.ResponseWriter, r *http.Re
 	return
 }
 
-
 func (mh *muxHandler) GetSubareaTypeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	typeId, _ := strconv.ParseInt(vars["id"], 10, 64)
@@ -410,7 +409,6 @@ func (mh *muxHandler) DeleteItemTypeHandler(w http.ResponseWriter, r *http.Reque
 
 	return
 }
-
 
 func (mh *muxHandler) GetItemTypeHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -893,11 +891,10 @@ func (mh *muxHandler) DeleteEntitySchemaHandler(w http.ResponseWriter, r *http.R
 
 }
 
-
 // Handle GetEntitySchema. Expects a GET request and nil  body.
 func (mh *muxHandler) EntitySchemaHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	entityName:= vars["name"]
+	entityName := vars["name"]
 	req := pb.GetEntitySchemaRequest{}
 	req.EntityName = entityName
 	ctx := getTokenContext(r)
@@ -930,8 +927,6 @@ func (mh *muxHandler) EntitySchemasHandler(w http.ResponseWriter, r *http.Reques
 
 }
 
-
-
 // Handle GetServerVersion. Expects a GET request and nil body. Does not require valid JWT.
 func (mh *muxHandler) ServerVersionHandler(w http.ResponseWriter, r *http.Request) {
 	req := pb.GetServerVersionRequest{}
@@ -948,7 +943,6 @@ func (mh *muxHandler) ServerVersionHandler(w http.ResponseWriter, r *http.Reques
 
 	return
 }
-
 
 // Helper to write method response as json to ResponseWriter.
 func writeResponse(resp interface{}, err error, errCode int, w http.ResponseWriter) {
