@@ -8,11 +8,11 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/mux v1.8.0
-	github.com/juju/gnuflag v0.0.0-20171113085948-2ce1bb71843d
+	github.com/juju/gnuflag v1.0.0
 	github.com/kylelemons/go-gypsy v1.0.0
 	github.com/rs/cors v1.8.2
-	google.golang.org/grpc v1.44.0
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/grpc v1.48.0
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
