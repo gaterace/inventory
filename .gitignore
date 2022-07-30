@@ -26,4 +26,6 @@ cmd/invclientrest/invclientrest
 cmd/invserver/invserver
 cmd/invserver/conf.yaml
 cmd/invserver/invserver_arm
+cmd/invserver/invserver_arm64
+
 
