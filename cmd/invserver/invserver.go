@@ -91,7 +91,7 @@ type cfg struct {
 
 func setupFlags(cmd *cobra.Command) error {
 
-	cmd.Flags().String("inv_conf", "conf.yaml", "Path to inventory config file.")
+	cmd.Flags().String("conf", "conf.yaml", "Path to inventory config file.")
 	cmd.Flags().String("log_file", "", "Path to log file.")
 	cmd.Flags().String("cert_file", "", "Path to certificate file.")
 	cmd.Flags().String("key_file", "", "Path to certificate key file.")
@@ -110,12 +110,12 @@ func setupFlags(cmd *cobra.Command) error {
 func (c *cli) setupConfig(cmd *cobra.Command, args []string) error {
 	var err error
 
+	viper.SetEnvPrefix("inv")
+
 	viper.AutomaticEnv()
 
-	configFile := viper.GetString("inv_conf")
-	if err != nil {
-		return err
-	}
+	configFile := viper.GetString("conf")
+
 	viper.SetConfigFile(configFile)
 
 	if err = viper.ReadInConfig(); err != nil {
